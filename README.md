@@ -12,6 +12,12 @@ APK Runner combines the Android Emulator, ADB, and scrcpy behind a Windows inter
 
 This repository contains the maintained application source, build and packaging scripts, tests, and artwork under the [MIT License](LICENSE). Android tools and other dependencies retain their own licenses; see [third-party notices](THIRD-PARTY-NOTICES.md).
 
+## App screenshot
+
+![APK Runner Windows launcher showing runtime component status, orientation selection, APK/XAPK controls, and activity log](docs/images/apk-runner-screenshot.jpg)
+
+*Actual screenshot of APK Runner 12.10.1 on Windows. The current interface uses Danish labels. This shows the launcher with its runtime configured; the downloadable 12.10.0 release may look slightly different.*
+
 ## What it can do
 
 | Feature | What it does |

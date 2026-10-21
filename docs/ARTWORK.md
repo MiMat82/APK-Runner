@@ -11,3 +11,9 @@ Create a polished wide landscape banner for the GitHub open-source repository AP
 ```
 
 The generated PNG is stored in this repository, so the README does not depend on a private generation-session path. A cryptographic hash and validation details are recorded in VERIFICATION.md.
+
+## Application screenshot
+
+`images/apk-runner-screenshot.jpg` is an unmodified window capture of the installed APK Runner **12.10.1**, taken on **2026-10-21** with Windows Graphics Capture through the computer-use tool. It is not generated artwork or a fixture rendering.
+
+The launcher is idle after its actual runtime component check. The component list is scrolled to the Android tools/device rows; no Android app was launched for this capture. Only the app window is included, and the visible content was reviewed for private paths and app data before publication. The installed version is newer than the existing 12.10.0 download.
