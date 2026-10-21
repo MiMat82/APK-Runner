@@ -29,7 +29,7 @@ README banner SHA-256: `3a41123dc0d9ee71e39928315e802de7f9f709d9943f02073db910c6
 - Added project/dependency notices to the build output.
 - Fixed fixture junction cleanup for Windows PowerShell 5.1 using a checked fixture path and nonrecursive junction deletion.
 
-## 12.11.0 English release preparation
+## 12.11.0 English release
 
 Checked on **2026-10-21** after the original source publication:
 
@@ -41,8 +41,9 @@ Checked on **2026-10-21** after the original source publication:
 | Installed local launcher | 12.11.0; 10 runtime components ready, with English status output. |
 | Existing Android data/configuration | All 11 protected file hashes matched the pre-update baseline. No runtime reset or data migration. |
 | Release packaging safeguards | Restored Release debug-symbol suppression and inclusion of APK Runner's MIT license plus third-party notices. Final distribution packages are built from fresh staging output. |
-| Independent release payload audit | In progress during release preparation; this section does not claim a completed public upload check. |
-| Live GitHub update probe | In progress during release preparation; public-feed verification is separate from the completed local checks. |
+| Independent release payload audit | 12 checks passed. Seven assets, checksums, update feeds, strict archive contents, licenses, English text and version metadata verified. |
+| Public uploaded assets | All seven draft assets downloaded and matched local SHA-256 before publication as latest stable. |
+| Live GitHub update probe | Passed: 12.11.0 detected, required, downloaded, verified and applied to an isolated installation. Eight fixture data files and runtime registration were unchanged; the actual production runtime resolver reused the external data folder. |
 
 The completed application checks above total **135**. The fresh distribution build and
 independent payload/public-download checks are additional checks, not included in that
@@ -55,12 +56,17 @@ The live-network probe's expected version is parameterized. It validates update
 download and application in isolation without using the owner's Android runtime;
 GUI restart and real Android app behavior are not claimed by that probe.
 
+Published [12.11.0](https://github.com/MiMat82/APK-Runner/releases/tag/v12.11.0) as the
+latest stable release on 2026-10-21. The binary source revision and release tag both
+identify `e3adecd10b1d6f3676159bda27c097b99b75377b`. The earlier 12.10.0 release remains
+available. No paid signing resource or trusted publisher identity was created.
+
 ## Limits
 
 The source checkout was built without copying an Android runtime or private historical analysis into it. NuGet/tool caches on the development PC were available; this is not proof of an uncached clean-machine install.
 
 No real Android app, emulator workload, firmware virtualization configuration, physical device, or independent PC was tested during the publication task. Android app compatibility and performance must be validated separately. No real Android data was reset or cleaned by these checks.
 
-The original source-publication task did not publish a binary release. Historical 12.10.0 assets remain earlier unsigned downloads and are not asserted to be byte-for-byte reproducible from the maintained source. The later 12.11.0 release preparation is recorded separately above.
+The original source-publication task did not publish a binary release. Historical 12.10.0 assets remain earlier unsigned downloads and are not asserted to be byte-for-byte reproducible from the maintained source. The later 12.11.0 publication and verification are recorded separately above.
 
 GitHub Actions is not configured as part of this publication. The source includes the local build and check commands; the results above are local validation, not hosted CI results.
