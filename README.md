@@ -14,9 +14,9 @@ This repository contains the maintained application source, build and packaging 
 
 ## App screenshot
 
-![APK Runner Windows launcher showing runtime component status, orientation selection, APK/XAPK controls, and activity log](docs/images/apk-runner-screenshot.jpg)
+![APK Runner 12.11.0 English interface showing runtime component status, orientation selection, APK/XAPK controls, and activity log](docs/images/apk-runner-screenshot.jpg)
 
-*Historical screenshot of APK Runner 12.10.1 on Windows, showing its earlier Danish interface with the runtime configured. The 12.11.0 release uses English labels; this image has not yet been replaced with a screenshot of that version.*
+*Actual screenshot of APK Runner 12.11.0 on Windows, showing the English interface with the Android runtime configured and all 10 components ready.*
 
 ## What it can do
 

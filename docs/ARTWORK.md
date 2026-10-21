@@ -14,6 +14,6 @@ The generated PNG is stored in this repository, so the README does not depend on
 
 ## Application screenshot
 
-`images/apk-runner-screenshot.jpg` is an unmodified window capture of the installed APK Runner **12.10.1**, taken on **2026-10-21** with Windows Graphics Capture through the computer-use tool. It is not generated artwork or a fixture rendering.
+`images/apk-runner-screenshot.jpg` is an unmodified window capture of the installed APK Runner **12.11.0**, taken on **2026-10-21** with Windows Graphics Capture through the computer-use tool. It shows the current English interface and replaces the earlier Danish 12.10.1 screenshot. It is not generated artwork or a fixture rendering.
 
-The launcher is idle after its actual runtime component check. The component list is scrolled to the Android tools/device rows; no Android app was launched for this capture. Only the app window is included, and the visible content was reviewed for private paths and app data before publication. The installed version is newer than the existing 12.10.0 download.
+The launcher is idle after its actual runtime and update checks, showing **10 / 10 READY** and **You're up to date**. The component list is scrolled to the Android tools/device rows; no Android app was launched for this capture. Only the app window is included, and the visible content was reviewed for private paths and app data before publication. The captured version matches the public 12.11.0 release.

@@ -15,7 +15,7 @@ Remove private paths, account information, tokens, and app content before postin
 3. Describe the behavior change and validation in your pull request. State when Android behavior was only simulated or not exercised.
 4. Update guides if controls, requirements, or setup behavior change.
 
-The current interface is primarily Danish. Keep control labels consistent and explain changes in plain language. Localization improvements are welcome.
+The current interface uses English. Keep control labels consistent and explain changes in plain language. Localization improvements are welcome.
 
 Use disposable fixtures for runtime/storage work. Tests must not silently reuse installed runtimes, register file associations, or delete a contributor's Android data. Commands that install tools, contact GitHub, change compression, or modify virtual devices must be explicit.
 
