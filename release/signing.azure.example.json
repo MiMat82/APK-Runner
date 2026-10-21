@@ -1,0 +1,8 @@
+{
+  "Provider": "AzureArtifactSigning",
+  "Trust": "PublicTrust",
+  "ExpectedSubject": "REPLACE_WITH_EXACT_SUBJECT_OF_ISSUED_CERTIFICATE",
+  "Endpoint": "https://weu.codesigning.azure.net",
+  "CodeSigningAccountName": "REPLACE_WITH_ACCOUNT_NAME",
+  "CertificateProfileName": "REPLACE_WITH_PUBLIC_TRUST_PROFILE"
+}

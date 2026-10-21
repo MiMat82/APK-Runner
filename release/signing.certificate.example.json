@@ -1,0 +1,7 @@
+{
+  "Provider": "CertificateStore",
+  "Trust": "PublicTrust",
+  "ExpectedSubject": "REPLACE_WITH_EXACT_SUBJECT_OF_ISSUED_CERTIFICATE",
+  "Thumbprint": "REPLACE_WITH_CERTIFICATE_THUMBPRINT",
+  "StoreLocation": "CurrentUser"
+}

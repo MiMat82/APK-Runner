@@ -1,0 +1,24 @@
+# Generated output and downloaded toolchains
+artifacts/
+analysis/
+.tools/
+**/bin/
+**/obj/
+**/runtime/
+**/android-sdk/
+**/avd/
+
+# Local settings, credentials, and signing identities
+release/signing.local.json
+release/publisher-request.json
+.env
+.env.*
+!.env.example
+*.pfx
+*.p12
+*.key
+*.pem
+*.user
+*.suo
+.vs/
+*.log
