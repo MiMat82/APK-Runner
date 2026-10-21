@@ -40,11 +40,12 @@ Build first to provide the updater dependency DLLs, then run:
 ```powershell
 powershell.exe -NoProfile -File .\tests\Run-Checks.ps1
 powershell.exe -NoProfile -File .\tests\Run-UpdateChecks.ps1
+powershell.exe -NoProfile -File .\tests\Run-StopChecks.ps1
 powershell.exe -NoProfile -File .\tests\Run-SigningChecks.ps1
 powershell.exe -NoProfile -File .\tools\Verify-Branding.ps1
 ```
 
-The main suite covers storage, guarded cleanup, UI rendering, launch arguments and configuration helpers. Cleanup tests use synthetic files and a fixture-local junction. Update checks cover paths, policy and sizing. Signing checks use test records; passing them does not establish that a real certificate exists or a package is signed.
+The main suite covers storage, guarded cleanup, English UI/resource preferences, UI rendering, launch arguments, asynchronous startup and configuration helpers. Cleanup tests use synthetic files and a fixture-local junction. Update checks cover paths, policy and sizing. Stop checks use fake ADB child processes to verify both managed devices, identity refusal, locking and data preservation. Signing checks use test records; passing them does not establish that a real certificate exists or a package is signed.
 
 Fixtures and evidence go under ignored `analysis`. Preserve them for debugging; do not publish real runtime diagnostics blindly.
 
@@ -64,7 +65,13 @@ powershell.exe -NoProfile -File .\tests\Run-UpdateIntegration.ps1
 
 This builds isolated 1.0.0/1.0.1 probe packages, starts hidden test processes, checks successful update/corrupt-package rejection, and checks a synthetic data hash. It does not install the main app or boot Android.
 
-`Run-GitHubUpdateIntegration.ps1` is a separate **live-network** probe that downloads an upstream release and currently expects **12.10.0**. Review that expectation if upstream changes. It is not part of the routine offline suite or a clean-machine Android test.
+`Run-GitHubUpdateIntegration.ps1` is a separate **live-network** probe. Its `-ExpectedVersion` parameter defaults to `release\VERSION.txt`; use an explicit version when validating a particular published release:
+
+```powershell
+powershell.exe -NoProfile -File .\tests\Run-GitHubUpdateIntegration.ps1 -ExpectedVersion 12.11.0
+```
+
+This probe checks the real GitHub update feed, package download/integrity and application in an isolated installation. It uses synthetic data, does not start a real Android emulator, and does not test the GUI restart or post-update interaction with a real Android app. It is not part of the routine offline suite or a clean-machine Android test.
 
 ## 4. Unsigned local packaging
 
@@ -82,15 +89,49 @@ This builds a fresh staging directory, installs pinned Velopack 1.2.161 if neces
 | `releases.win.json`, `assets.win.json`, `RELEASES` | Update/packaging metadata. |
 | `SHA256SUMS.txt` | Generated file checksums. |
 
-Unsigned development packages can show publisher warnings. The publishing helper rejects them. The existing public 12.10.0 release predates the stricter signing gate.
+Unsigned development packages can show publisher warnings. Building one does not authorize publication. The publishing helper requires signed packages by default; an unsigned public release needs the separate, explicit maintainer decision described below.
 
-## 5. Signed releases
+## 5. Official release publication
 
 Release packaging defaults to requiring a Windows-trusted, timestamped code-signing identity. Copy the appropriate placeholder `release\signing.*.example.json` to ignored `release\signing.local.json`, then configure the actual issuer-validated identity. Windows certificate store and Azure Artifact Signing are supported.
 
 Do not commit keys, real signing configuration or credentials. The scripts do not create a certificate or signing account. Review `Signing.ps1` and `Verify-SignedRelease.ps1` before configuring a provider.
 
-For a new official binary release, maintainers update `release\VERSION.txt` and `release\NOTES.md`, build/validate the signed package, then explicitly run the publishing helper. It uses GitHub CLI/credential-manager authentication and refuses to overwrite an existing version. Publishing binaries is not required to contribute source changes.
+For a new official binary release, update `release\VERSION.txt` and `release\NOTES.md`, run the checks, and build a fresh package. Include `LICENSE.txt` and `THIRD-PARTY-NOTICES.md`; Release PDBs, Android runtimes and user data must not enter the package. Review and publish the corresponding source commit before using its full 40-character hash as `-TargetCommit`:
+
+```powershell
+powershell.exe -NoProfile -File .\tools\Build-Release.ps1 -Version 12.11.0
+$sourceCommit = (git rev-parse HEAD).Trim()
+powershell.exe -NoProfile -File .\tools\Publish-Release.ps1 `
+    -ReleaseDirectory '<reviewed release directory>' -Version 12.11.0 `
+    -TargetCommit $sourceCommit
+```
+
+The default publication path verifies the actual packaged signatures and timestamps against the configured publisher. `Verify-ReleasePayload.ps1` also checks the release's expected files, checksums, update metadata, versions and permitted archive contents. To run that audit separately:
+
+```powershell
+powershell.exe -NoProfile -File .\tools\Verify-ReleasePayload.ps1 `
+    -ReleaseDirectory '<reviewed release directory>' -Version 12.11.0
+powershell.exe -NoProfile -File .\tests\Run-ReleasePayloadChecks.ps1
+```
+
+The helper uses GitHub CLI/credential-manager authentication, requires a source commit and refuses to overwrite an existing version. It creates a **draft**, downloads the uploaded assets, compares their hashes with the reviewed local files and audits the downloaded payload again. Only after those checks pass does it publish the release and mark it latest, exposing it to existing updaters. A failed upload/readback leaves the draft unpublished for inspection. Publishing binaries is not required to contribute source changes.
+
+### Explicit unsigned release decision
+
+An unsigned release does not provide a Windows-verified publisher. A maintainer can deliberately publish one when the owner has authorized that distribution choice. Build it with `-AllowUnsignedDevelopment`, disclose that it is **not Authenticode-signed** in `release\NOTES.md`, then pass both the publication switch and the actual reason:
+
+```powershell
+powershell.exe -NoProfile -File .\tools\Build-Release.ps1 `
+    -Version 12.11.0 -AllowUnsignedDevelopment
+$sourceCommit = (git rev-parse HEAD).Trim()
+powershell.exe -NoProfile -File .\tools\Publish-Release.ps1 `
+    -ReleaseDirectory '<reviewed release directory>' -Version 12.11.0 `
+    -TargetCommit $sourceCommit -AllowUnsignedRelease `
+    -UnsignedReleaseReason '<recorded owner-authorized reason>'
+```
+
+This choice bypasses only the requirement for a trusted publisher signature. It does not bypass payload validation, damaged-signature rejection, source tagging, draft upload readback or checksum comparison. Do not use it to describe an unsigned release as signed. The 12.11.0 release uses this explicit unsigned path; no signing subscription was purchased.
 
 ## 6. Fork configuration
 

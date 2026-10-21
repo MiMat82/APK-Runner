@@ -34,11 +34,11 @@ namespace APKRunner
 
         public async Task Check()
         {
-            if (manager == null) throw new InvalidOperationException("Installér APK Runner med Setup for at aktivere automatiske opdateringer.");
+            if (manager == null) throw new InvalidOperationException("Install APK Runner using Setup to enable automatic updates.");
             Task<UpdateInfo> check = manager.CheckForUpdatesAsync();
             if (await Task.WhenAny(check, Task.Delay(15000)) != check) {
                 var observation = check.ContinueWith(t => { var observed = t.Exception; }, TaskContinuationOptions.OnlyOnFaulted);
-                throw new TimeoutException("Opdateringstjek tog for lang tid. Prøv igen senere.");
+                throw new TimeoutException("The update check timed out. Please try again later.");
             }
             UpdateInfo candidate = await check;
             Version target = candidate == null ? null : new Version(candidate.TargetFullRelease.Version.ToString());
@@ -52,13 +52,13 @@ namespace APKRunner
 
         public Task Download(Action<int> progress)
         {
-            if (Available == null) throw new InvalidOperationException("Kontrollér for opdateringer først.");
+            if (Available == null) throw new InvalidOperationException("Check for updates first.");
             return manager.DownloadUpdatesAsync(Available, progress);
         }
 
         public void Apply(string pendingApk)
         {
-            if (Available == null) throw new InvalidOperationException("Ingen verificeret opdatering er klar.");
+            if (Available == null) throw new InvalidOperationException("No verified update is ready to install.");
             manager.ApplyUpdatesAndRestart(Available.TargetFullRelease, string.IsNullOrEmpty(pendingApk) ? new string[0] : new[] { pendingApk });
         }
 

@@ -1,5 +1,5 @@
 ﻿// Recovered from the user-owned V12.9 executable using ILSpy 9.1.
-// Historical recovery files are not required to build this maintained source.
+// Original recovered file is retained in analysis/recovered-v12.9.
 using System;
 using System.Collections.Generic;
 using System.Diagnostics;
@@ -271,7 +271,7 @@ namespace APKRunner
                         !x.TrimStart().StartsWith("path.rel=", StringComparison.OrdinalIgnoreCase)).ToList();
                     repaired.Add(wanted);
                     File.WriteAllLines(ini, repaired, new UTF8Encoding(false));
-                    Log("Android-sti opdateret: " + name + ". Tidligere registrering gemt i " + Path.GetFileName(saved));
+					Log("Android path updated: " + name + ". Previous registration saved in " + Path.GetFileName(saved));
                 }
             }
         }
@@ -309,7 +309,7 @@ namespace APKRunner
 				SetIniValue(list, "showDeviceFrame", "no");
 				SetIniValue(list, "apkRunner.performanceProfile", HighPerformance ? "high" : "normal");
 				File.WriteAllLines(path, list.ToArray(), new UTF8Encoding(false));
-				Log("Ydeevneprofil gemt: " + (HighPerformance ? "Høj ydeevne" : "Normal") + " · " + num3 + " CPU-kerner, " + num2 + " MB Android-RAM og automatisk GPU-acceleration.");
+				Log("Performance profile saved: " + (HighPerformance ? "High performance" : "Normal") + " · " + num3 + " CPU cores, " + num2 + " MB Android RAM and automatic GPU acceleration.");
 			}
 		}
 
@@ -388,12 +388,12 @@ namespace APKRunner
 							orderby x
 							select x).ToArray();
 					}
-					throw new Exception("Vælg en APK- eller XAPK-fil.");
+					throw new Exception("Choose an APK or XAPK file.");
 				}
 			}
 			catch (InvalidDataException)
 			{
-				throw new Exception("Filen er ikke en gyldig APK- eller XAPK-fil.");
+				throw new Exception("The file is not a valid APK or XAPK file.");
 			}
 		}
 
@@ -407,7 +407,7 @@ namespace APKRunner
 			}
 			if (!Path.GetExtension(file).Equals(".xapk", StringComparison.OrdinalIgnoreCase))
 			{
-				throw new Exception("Vælg en APK- eller XAPK-fil.");
+				throw new Exception("Choose an APK or XAPK file.");
 			}
 			string text = Path.Combine(Path.GetTempPath(), "AR", Guid.NewGuid().ToString("N").Substring(0, 8));
 			Directory.CreateDirectory(text);
@@ -421,7 +421,7 @@ namespace APKRunner
 						select e).ThenBy((ZipArchiveEntry e) => e.FullName, StringComparer.OrdinalIgnoreCase).ToArray();
 					if (array.Length == 0)
 					{
-						throw new Exception("XAPK-filen indeholder ingen APK-filer.");
+						throw new Exception("The XAPK file contains no APK files.");
 					}
 					InstallPayload installPayload2 = new InstallPayload();
 					installPayload2.Stage = text;
@@ -555,9 +555,9 @@ namespace APKRunner
 		public List<Status> Check()
 		{
 			List<Status> list = new List<Status>();
-			list.Add(new Status("Windows x64", SupportedWindows(), SupportedWindows() ? "Windows 10 22H2 / Windows 11 x64" : "Kræver Windows 10 22H2 eller Windows 11 x64"));
+			list.Add(new Status("Windows x64", SupportedWindows(), SupportedWindows() ? "Windows 10 22H2 / Windows 11 x64" : "Requires Windows 10 22H2 or Windows 11 x64"));
 			bool r = false;
-			string d = "Installer emulatoren for at kontrollere hypervisoren";
+			string d = "Install the emulator to check the hypervisor";
 			if (File.Exists(Emulator))
 			{
 				try
@@ -573,10 +573,10 @@ namespace APKRunner
 			}
 			else if (!IsProcessorFeaturePresent(21u))
 			{
-				d = "CPU-virtualisering kunne ikke bekræftes; emulatoren afgør om systemet er klar";
+				d = "CPU virtualization could not be confirmed; the emulator will determine whether the system is ready";
 			}
-			list.Add(new Status("Virtualisering", r, d));
-			list.Add(new Status("Privat Java 17", Probe(Java, new string[1] { "-version" }, "version \"17."), "runtime\\java"));
+			list.Add(new Status("Virtualization", r, d));
+			list.Add(new Status("Private Java 17", Probe(Java, new string[1] { "-version" }, "version \"17."), "runtime\\java"));
 			bool r2 = false;
 			try
 			{
@@ -588,13 +588,13 @@ namespace APKRunner
 			catch
 			{
 			}
-			list.Add(new Status("SDK værktøjer", r2, "Fast version 12.0 til Java 17"));
+			list.Add(new Status("SDK tools", r2, "Pinned version 12.0 for Java 17"));
 			list.Add(new Status("ADB", Probe(Adb, new string[1] { "version" }, "Android Debug Bridge"), "Android platform-tools"));
-			list.Add(new Status("Android Emulator", Probe(Emulator, new string[1] { "-version" }, "Android emulator"), "Privat emulator"));
+			list.Add(new Status("Android Emulator", Probe(Emulator, new string[1] { "-version" }, "Android emulator"), "Private emulator"));
 			list.Add(new Status("AAPT", Probe(Aapt, new string[1] { "version" }, "Android Asset Packaging Tool"), "Build-tools 35.0.0"));
-			list.Add(new Status("Android system", ImagePresent(), "Android 15 Google APIs / x86_64 / ARM-oversættelse"));
-			list.Add(new Status("Android enhed", AvdPresent(), "APKRunner"));
-			list.Add(new Status("App-vindue", Probe(Scrcpy, new string[1] { "--version" }, "scrcpy"), "scrcpy"));
+			list.Add(new Status("Android system", ImagePresent(), "Android 15 Google APIs / x86_64 / ARM translation"));
+			list.Add(new Status("Android device", AvdPresent(), "APKRunner"));
+			list.Add(new Status("App window", Probe(Scrcpy, new string[1] { "--version" }, "scrcpy"), "scrcpy"));
 			return list;
 		}
 
@@ -663,7 +663,7 @@ namespace APKRunner
 			Log(result.Text);
 			if (result.Code != 0)
 			{
-				throw new Exception("Android SDK fejl:\r\n" + result.Text);
+				throw new Exception("Android SDK error:\r\n" + result.Text);
 			}
 		}
 
@@ -685,7 +685,7 @@ namespace APKRunner
 				{
 					return;
 				}
-				Log("Lukker den gamle Android-enhed for at opgradere den...");
+				Log("Closing the old Android device to upgrade it...");
 				Must(Adb, new string[4] { "-s", "emulator-5580", "emu", "kill" });
 				DateTime dateTime = DateTime.UtcNow.AddSeconds(45.0);
 				while (DateTime.UtcNow < dateTime)
@@ -696,11 +696,11 @@ namespace APKRunner
 					}
 					Thread.Sleep(1000);
 				}
-				throw new Exception("Android-enheden lukkede ikke inden for 45 sekunder.");
+				throw new Exception("The Android device did not close within 45 seconds.");
 			}
 			catch (Exception ex)
 			{
-				throw new Exception("Kunne ikke lukke APK Runners gamle Android-enhed før opgradering. Luk APK Runner og prøv igen.\r\n\r\n" + ex.Message);
+				throw new Exception("Could not close APK Runner's old Android device before upgrading. Close APK Runner and try again.\r\n\r\n" + ex.Message);
 			}
 		}
 
@@ -711,22 +711,29 @@ namespace APKRunner
 				return;
 			}
 			string text = Run(Adb, new string[1] { "devices" }, 20).Text;
-			if (!text.Contains(serial) || !Run(Adb, new string[5] { "-s", serial, "emu", "avd", "name" }, 20).Text.Split('\n').Any((string x) => x.Trim() == name))
+			if (!DeviceListed(text, serial))
 			{
 				return;
 			}
+            Result identity = Run(Adb, new string[5] { "-s", serial, "emu", "avd", "name" }, 20);
+            if (identity.Code != 0 || !identity.Text.Split('\n').Any(line => line.Trim() == name)) return;
 			Must(Adb, new string[4] { "-s", serial, "emu", "kill" });
 			DateTime dateTime = DateTime.UtcNow.AddSeconds(45.0);
 			while (DateTime.UtcNow < dateTime)
 			{
-				if (!Run(Adb, new string[1] { "devices" }, 15).Text.Contains(serial))
+				if (!DeviceListed(Run(Adb, new string[1] { "devices" }, 15).Text, serial))
 				{
 					return;
 				}
 				Thread.Sleep(1000);
 			}
-			throw new Exception("Android TV-enheden lukkede ikke inden for 45 sekunder.");
+			throw new Exception("The Android device " + name + " did not close within 45 seconds.");
 		}
+
+        private static bool DeviceListed(string listing, string serial)
+        {
+            return listing.Split('\n').Any(line => line.Trim().Split(new char[] { ' ', '\t' }, StringSplitOptions.RemoveEmptyEntries).FirstOrDefault() == serial);
+        }
 
 		private void EnsureTvRuntime()
 		{
@@ -734,7 +741,7 @@ namespace APKRunner
 			{
 				return;
 			}
-			Log("Installerer Android TV x86 til denne 32-bit x86-app...");
+			Log("Installing Android TV x86 for this 32-bit x86 app...");
 			if (!File.Exists(Path.Combine(Sdk, "system-images", "android-34", "android-tv", "x86", "system.img")))
 			{
 				SdkMust(false, new string[1] { "system-images;android-34;android-tv;x86" }, 3600, "y\n");
@@ -758,7 +765,7 @@ namespace APKRunner
 				File.WriteAllText(text2, "avd.ini.encoding=UTF-8\r\npath=" + text + "\r\ntarget=android-34\r\n", new UTF8Encoding(false));
 				if (!TvPresent())
 				{
-					throw new Exception("Android TV x86-enheden blev ikke oprettet korrekt.");
+					throw new Exception("The Android TV x86 device was not created correctly.");
 				}
 			}
 		}
@@ -784,7 +791,7 @@ namespace APKRunner
 			{
 				throw new Exception("HTTPS required");
 			}
-			Log("Henter " + url);
+			Log("Downloading " + url);
 			using (WebClient webClient = Client())
 			{
 				int percent = -10;
@@ -800,7 +807,7 @@ namespace APKRunner
 				if (!task.Wait(TimeSpan.FromMinutes(30.0)))
 				{
 					webClient.CancelAsync();
-					throw new TimeoutException("Download tog mere end 30 minutter. Prøv igen.");
+					throw new TimeoutException("The download took more than 30 minutes. Try again.");
 				}
 			}
 			using (HashAlgorithm hashAlgorithm = ((algorithm == "SHA1") ? ((HashAlgorithm)SHA1.Create()) : ((HashAlgorithm)SHA256.Create())))
@@ -871,7 +878,7 @@ namespace APKRunner
 		{
 			if (!SupportedWindows())
 			{
-				throw new Exception("Denne udgave kræver Windows 10 22H2 eller Windows 11 x64.");
+				throw new Exception("This version requires Windows 10 22H2 or Windows 11 x64.");
 			}
 			Directory.CreateDirectory(Root);
 			Directory.CreateDirectory(Sdk);
@@ -881,7 +888,7 @@ namespace APKRunner
 			{
 				List<Status> list = Check();
 				update(list);
-				if (!list.First((Status x) => x.Name == "Privat Java 17").Ready)
+				if (!list.First((Status x) => x.Name == "Private Java 17").Ready)
 				{
 					object obj = new JavaScriptSerializer().DeserializeObject(Get("https://api.adoptium.net/v3/assets/latest/17/hotspot?architecture=x64&image_type=jre&os=windows&vendor=eclipse"));
 					Dictionary<string, object> dictionary = (Dictionary<string, object>)((object[])obj)[0];
@@ -890,11 +897,11 @@ namespace APKRunner
 					InstallZip((string)dictionary3["link"], (string)dictionary3["checksum"], "SHA256", Path.Combine(Root, "java"), "java.exe");
 					if (!Probe(Java, new string[1] { "-version" }, "version \"17."))
 					{
-						throw new Exception("Den private Java 17 kan ikke starte.");
+						throw new Exception("The private Java 17 runtime could not start.");
 					}
 				}
 				update(Check());
-				if (!list.First((Status x) => x.Name == "SDK værktøjer").Ready)
+				if (!list.First((Status x) => x.Name == "SDK tools").Ready)
 				{
 					XDocument xDocument = XDocument.Parse(Get("https://dl.google.com/android/repository/repository2-1.xml"));
 					XElement xElement = xDocument.Descendants().First((XElement x) => x.Name.LocalName == "remotePackage" && (string)x.Attribute("path") == "cmdline-tools;12.0");
@@ -924,7 +931,7 @@ namespace APKRunner
 					{
 						Action<string> log = Log;
 						KeyValuePair<string, string> keyValuePair = p;
-						log("Installerer " + keyValuePair.Key);
+						log("Installing " + keyValuePair.Key);
 						string sdk = Sdk;
 						KeyValuePair<string, string> keyValuePair2 = p;
 						string text = Path.Combine(sdk, keyValuePair2.Value.Replace(';', Path.DirectorySeparatorChar));
@@ -989,9 +996,9 @@ namespace APKRunner
 					select x.Name).ToArray();
 				if (array2.Length > 0)
 				{
-					throw new Exception("Mangler stadig: " + string.Join(", ", array2) + ". Se status. Windows Hypervisor Platform kan kræve aktivering og genstart.");
+					throw new Exception("Still missing: " + string.Join(", ", array2) + ". Check the component status. Windows Hypervisor Platform may need to be enabled, followed by a restart.");
 				}
-				Log("Installation kontrolleret. Vælg nu en APK.");
+				Log("Installation verified. Choose an APK to continue.");
 			}
 		}
 
@@ -1000,7 +1007,7 @@ namespace APKRunner
 			file = Path.GetFullPath(file);
 			if (!File.Exists(file) || (!Path.GetExtension(file).Equals(".apk", StringComparison.OrdinalIgnoreCase) && !Path.GetExtension(file).Equals(".xapk", StringComparison.OrdinalIgnoreCase)))
 			{
-				throw new Exception("Vælg en eksisterende APK- eller XAPK-fil.");
+				throw new Exception("Choose an existing APK or XAPK file.");
 			}
 			using (InstallPayload installPayload = Prepare(file))
 			{
@@ -1008,16 +1015,16 @@ namespace APKRunner
 				bool flag = nativeAbis.Any((string abi) => abi.Equals("x86", StringComparison.OrdinalIgnoreCase)) && !nativeAbis.Any((string abi) => abi.Equals("x86_64", StringComparison.OrdinalIgnoreCase) || abi.Equals("arm64-v8a", StringComparison.OrdinalIgnoreCase));
 				if (nativeAbis.Any((string abi) => abi.Equals("arm64-v8a", StringComparison.OrdinalIgnoreCase)) && !nativeAbis.Any((string abi) => abi.Equals("x86", StringComparison.OrdinalIgnoreCase) || abi.Equals("x86_64", StringComparison.OrdinalIgnoreCase)))
 				{
-					Log("ARM64-APK fundet. Android bruger Google APIs-image med NDK-oversættelse.");
+					Log("ARM64 APK detected. Android uses the Google APIs system image with NDK translation.");
 				}
 				else if (nativeAbis.Length > 0 && !nativeAbis.Any((string abi) => abi.Equals("x86", StringComparison.OrdinalIgnoreCase) || abi.Equals("x86_64", StringComparison.OrdinalIgnoreCase)))
 				{
-					throw new Exception("Denne APK har kun 32-bit ARM-biblioteker: " + string.Join(", ", nativeAbis) + ". APK Runner understøtter x86, x86_64 og arm64-v8a.");
+					throw new Exception("This APK contains only 32-bit ARM libraries: " + string.Join(", ", nativeAbis) + ". APK Runner supports x86, x86_64 and arm64-v8a.");
 				}
 				List<Status> source = checkedState ?? Check();
 				if (source.Any((Status x) => !x.Ready))
 				{
-					throw new Exception("Installér manglende dele og kontrollér virtualisering først.");
+					throw new Exception("Install the missing components and check virtualization first.");
 				}
 				if (flag)
 				{
@@ -1032,18 +1039,18 @@ namespace APKRunner
 				Match match = Regex.Match(text, "package: name='([^']+)'");
 				if (!match.Success)
 				{
-					throw new Exception("APK-pakken kunne ikke læses.");
+					throw new Exception("The APK package could not be read.");
 				}
 				string value = match.Groups[1].Value;
 				Match match2 = Regex.Match(text, "versionCode='([^']+)'");
 				if (!match2.Success)
 				{
-					throw new Exception("APK-versionen kunne ikke læses.");
+					throw new Exception("The APK version could not be read.");
 				}
 				string value2 = match2.Groups[1].Value;
 				if (!Regex.IsMatch(value, "^[a-zA-Z0-9_]+(\\.[a-zA-Z0-9_]+)+$"))
 				{
-					throw new Exception("Ugyldigt pakkenavn.");
+					throw new Exception("Invalid package name.");
 				}
 				string text2 = (flag ? "emulator-5582" : "emulator-5580");
 				string avdName = (flag ? "APKRunnerTV" : "APKRunner");
@@ -1054,7 +1061,7 @@ namespace APKRunner
 					string text4 = Must(Adb, new string[1] { "devices" }).Text;
 					if (!HasPerformanceProfile(avdName) && text4.Contains(text2))
 					{
-						Log("Skifter ydeevneprofil og genstarter Android.");
+						Log("Switching performance profile and restarting Android.");
 						StopManagedEmulator(text2, avdName);
 						text4 = Must(Adb, new string[1] { "devices" }).Text;
 					}
@@ -1063,7 +1070,7 @@ namespace APKRunner
 						string text5 = Must(Adb, new string[5] { "-s", text2, "emu", "avd", "name" }).Text;
 						if (!text5.Split('\n').Any((string x) => x.Trim() == avdName))
 						{
-							throw new Exception("Android-porten bruges af en anden emulator.");
+							throw new Exception("The Android port is in use by another emulator.");
 						}
 					}
 					else
@@ -1072,7 +1079,7 @@ namespace APKRunner
 						{
 							TuneAvd(avdName);
 						}
-						Log("Starter Android. Første opstart kan tage flere minutter.");
+						Log("Starting Android. The first startup may take several minutes.");
 						StartAndroid(flag);
 						if (FastRendering && !flag) WaitForQuietBoot(text2);
 					}
@@ -1090,7 +1097,7 @@ namespace APKRunner
 					}
 					if (!flag2)
 					{
-						throw new Exception("Android blev ikke klar inden for fire minutter.");
+						throw new Exception("Android was not ready within four minutes.");
 					}
 					if (flag)
 					{
@@ -1102,11 +1109,11 @@ namespace APKRunner
 					string text6 = Run(Adb, new string[6] { "-s", text2, "shell", "dumpsys", "package", value }, 30).Text;
 					if (Regex.IsMatch(text6, "versionCode=" + Regex.Escape(value2) + "(?:\\s|$)"))
 					{
-						Log("Samme appversion er allerede installeret. Springer geninstallation over.");
+						Log("The same app version is already installed. Skipping reinstallation.");
 					}
 					else
 					{
-						Log("Installerer " + ((installPayload.Apks.Length > 1) ? "XAPK-pakke" : "APK") + " i APK Runners Android-enhed...");
+						Log("Installing " + ((installPayload.Apks.Length > 1) ? "XAPK package" : "APK") + " on APK Runner's Android device...");
 						List<string> list = new List<string>();
 						list.Add("-s");
 						list.Add(text2);
@@ -1140,7 +1147,7 @@ namespace APKRunner
 					string text7 = result2.Text.Split(new char[2] { '\r', '\n' }, StringSplitOptions.RemoveEmptyEntries).LastOrDefault();
 					if (result2.Code != 0 || text7 == null || !Regex.IsMatch(text7, "^[a-zA-Z0-9_.$]+/[a-zA-Z0-9_.$]+$"))
 					{
-						throw new Exception("APK installeret, men appen har ingen startbar aktivitet.");
+						throw new Exception("The APK is installed, but the app has no launchable activity.");
 					}
 					List<string> list3 = new List<string>();
 					list3.Add("--serial");
@@ -1185,9 +1192,9 @@ namespace APKRunner
 					process2.BeginErrorReadLine();
 					if (process2.WaitForExit(1500))
 					{
-						throw new Exception("App-vinduet lukkede uventet. Kontroller scrcpy.");
+						throw new Exception("The app window closed unexpectedly. Check scrcpy.");
 					}
-					Log("Appen kører. Android forbliver startet, når app-vinduet lukkes.");
+					Log("The app is running. Android will keep running after the app window closes.");
 				}
 			}
 		}
@@ -1235,7 +1242,7 @@ namespace APKRunner
 
         public void WaitForQuietBoot(string serial)
         {
-            Log("Android er startet; venter på at opstartsarbejdet falder til ro (højst 120 sekunder).");
+            Log("Android has started; waiting for startup activity to settle (up to 120 seconds).");
             var clock = Stopwatch.StartNew();
             string previous = Run(Adb, new string[] { "-s", serial, "shell", "cat", "/proc/stat" }, 5).Text;
             int quiet = 0;
@@ -1247,15 +1254,15 @@ namespace APKRunner
                 quiet = idle >= .75 ? quiet + 1 : 0;
                 previous = sample.Text;
                 if (clock.Elapsed.TotalSeconds >= nextProgress) {
-                    Log("Afventer Androids opstartsarbejde: " + ((1 - idle) * 100).ToString("F0") + "% CPU optaget.");
+                    Log("Waiting for Android startup activity: " + ((1 - idle) * 100).ToString("F0") + "% CPU busy.");
                     nextProgress += 10;
                 }
                 if (quiet >= 3) {
-                    Log("Androids opstartsarbejde er faldet til ro efter " + clock.Elapsed.TotalSeconds.ToString("F1") + " s. Åbner appen.");
+                    Log("Android startup activity settled after " + clock.Elapsed.TotalSeconds.ToString("F1") + " s. Opening the app.");
                     return;
                 }
             }
-            Log("Android arbejder stadig i baggrunden. Åbner appen; der kan være midlertidige hak efter kold opstart.");
+            Log("Android is still working in the background. Opening the app; temporary stuttering may occur after a cold start.");
         }
 
         private void StartAndroid(bool legacyX86)
@@ -1268,7 +1275,7 @@ namespace APKRunner
                 process.ErrorDataReceived += delegate(object sender, DataReceivedEventArgs e) {
                     if (e.Data != null && e.Data.IndexOf("ERROR", StringComparison.OrdinalIgnoreCase) >= 0) Log(e.Data);
                 };
-                Log("Grafik: automatisk valg.");
+                Log("Graphics: automatic selection.");
                 process.Start(); process.StandardInput.Close();
                 process.BeginOutputReadLine(); process.BeginErrorReadLine();
                 Stopwatch boot = Stopwatch.StartNew();
@@ -1276,8 +1283,8 @@ namespace APKRunner
                     Result ready = Run(Adb, new string[] { "-s", legacyX86 ? "emulator-5582" : "emulator-5580", "shell", "getprop", "sys.boot_completed" }, 15);
                     if (ready.Code == 0 && ready.Text.Trim() == "1") return;
                 }
-                if (!process.HasExited) throw new Exception("Android blev ikke klar inden for fire minutter. Den kørende enhed er bevaret.");
-                throw new Exception("Android afsluttede under opstart. Se grafikfejlen i loggen.");
+                if (!process.HasExited) throw new Exception("Android was not ready within four minutes. The running device has been preserved.");
+                throw new Exception("Android exited during startup. Check the graphics error in the log.");
         }
 
 		private void SetMediaVolume()
@@ -1307,7 +1314,7 @@ namespace APKRunner
 		{
 			if (string.IsNullOrEmpty(ActiveSerial))
 			{
-				throw new Exception("Start en app først.");
+				throw new Exception("Start an app first.");
 			}
 			Must(Adb, new string[6] { "-s", ActiveSerial, "shell", "input", "keyevent", "24" });
 		}
@@ -1316,7 +1323,7 @@ namespace APKRunner
 		{
 			if (string.IsNullOrEmpty(ActiveSerial))
 			{
-				throw new Exception("Start en app først.");
+				throw new Exception("Start an app first.");
 			}
 			Must(Adb, new string[6] { "-s", ActiveSerial, "shell", "input", "keyevent", "25" });
 		}
@@ -1325,7 +1332,7 @@ namespace APKRunner
 		{
 			if (string.IsNullOrEmpty(ActiveSerial))
 			{
-				throw new Exception("Start en app først.");
+				throw new Exception("Start an app first.");
 			}
 			Must(Adb, new string[6] { "-s", ActiveSerial, "shell", "input", "keyevent", "164" });
 		}
@@ -1335,12 +1342,21 @@ namespace APKRunner
 			Directory.CreateDirectory(Root);
 			using (new FileStream(Path.Combine(Root, "operation.lock"), FileMode.OpenOrCreate, FileAccess.ReadWrite, FileShare.None))
 			{
-				string text = Must(Adb, new string[5] { "-s", "emulator-5580", "emu", "avd", "name" }).Text;
-				if (!text.Split('\n').Any((string x) => x.Trim() == "APKRunner"))
-				{
-					throw new Exception("Denne emulator tilhører ikke APK Runner.");
-				}
-				Must(Adb, new string[4] { "-s", "emulator-5580", "emu", "kill" });
+                if (!File.Exists(Adb)) { Log("No APK Runner Android devices are running."); return; }
+                string listing = Must(Adb, new string[] { "devices" }, 20).Text;
+                var targets = new List<KeyValuePair<string, string>>();
+                foreach (var target in new[] {
+                    new KeyValuePair<string, string>("emulator-5580", AvdName),
+                    new KeyValuePair<string, string>("emulator-5582", TvAvdName) }) {
+                    if (!DeviceListed(listing, target.Key)) continue;
+                    // Check every target before stopping any of them. A port may belong to an unrelated AVD.
+                    string identity = Must(Adb, new string[] { "-s", target.Key, "emu", "avd", "name" }, 20).Text;
+                    if (!identity.Split('\n').Any(line => line.Trim() == target.Value))
+                        throw new Exception("Refusing to stop " + target.Key + ": it does not belong to APK Runner's " + target.Value + " device. No Android devices were stopped.");
+                    targets.Add(target);
+                }
+                foreach (var target in targets) StopManagedEmulator(target.Key, target.Value);
+                Log(targets.Count == 0 ? "No APK Runner Android devices are running." : "APK Runner Android devices stopped. Installed apps and saved data are preserved.");
 			}
 		}
 	}
@@ -1397,12 +1413,12 @@ namespace APKRunner
 				if (!File.Exists(pending) || (!extension.Equals(".apk", StringComparison.OrdinalIgnoreCase) && !extension.Equals(".xapk", StringComparison.OrdinalIgnoreCase)))
 				{
 					pending = null;
-					throw new Exception("Vælg en eksisterende APK- eller XAPK-fil.");
+					throw new Exception("Choose an existing APK or XAPK file.");
 				}
 				List<Status> state = lastStatus ?? runtime.Check();
 				if (state.Any((Status x) => !x.Ready))
 				{
-					Log("Fil valgt: " + Path.GetFileName(pending) + ". Installér manglende dele først.");
+					Log("File selected: " + Path.GetFileName(pending) + ". Install the missing components first.");
 					return;
 				}
 				string text = pending;
@@ -1442,15 +1458,15 @@ namespace APKRunner
 			Invoke((Action)delegate
 			{
 				list.Items.Clear();
-                statusSummary.Text = s.Count == 0 ? "AFVENTER KONTROL" : s.Count(x => x.Ready).ToString("00") + " / " + s.Count.ToString("00") + " KLAR";
+                statusSummary.Text = s.Count == 0 ? "AWAITING CHECK" : s.Count(x => x.Ready).ToString("00") + " / " + s.Count.ToString("00") + " READY";
                 emptyState.Visible = s.Count == 0;
-                if (s.Count == 0) emptyState.Text = "Ingen komponentstatus endnu. Vælg Kontrollér.";
+                if (s.Count == 0) emptyState.Text = "No component status yet. Select Check runtime.";
 				foreach (Status item in s.OrderBy(x => x.Ready))
 				{
 					ListViewItem value = new ListViewItem(new string[3]
 					{
 						item.Name,
-						item.Ready ? "KLAR" : "MANGLER",
+						item.Ready ? "READY" : "MISSING",
 						item.Detail.Replace("\r", " ").Replace("\n", " ")
 					})
 					{
@@ -1472,7 +1488,7 @@ namespace APKRunner
 			if (updatePolicy.BlocksNewApps || applyingUpdate) return;
 			OpenFileDialog d = new OpenFileDialog
 			{
-				Filter = "Android app-pakker (*.apk;*.xapk)|*.apk;*.xapk",
+				Filter = "Android app packages (*.apk;*.xapk)|*.apk;*.xapk",
 				CheckFileExists = true
 			};
 			try
@@ -1510,7 +1526,7 @@ namespace APKRunner
 				Type typeFromProgID = Type.GetTypeFromProgID("WScript.Shell");
 				if (typeFromProgID == null)
 				{
-					throw new Exception("Windows kan ikke oprette genveje.");
+					throw new Exception("Windows could not create shortcuts.");
 				}
 				object target = Activator.CreateInstance(typeFromProgID);
 				object obj = typeFromProgID.InvokeMember("CreateShortcut", BindingFlags.InvokeMethod, null, target, new object[1] { text2 });
@@ -1519,13 +1535,13 @@ namespace APKRunner
                 type.InvokeMember("IconLocation", BindingFlags.SetProperty, null, obj, new object[1] { ShellBranding.EnsureIcon(RuntimePaths.SettingsDirectory) + ",0" });
 				type.InvokeMember("Arguments", BindingFlags.SetProperty, null, obj, new object[1] { Runtime.Arg(Path.GetFullPath(apk)) });
                 type.InvokeMember("WorkingDirectory", BindingFlags.SetProperty, null, obj, new object[1] { Path.GetDirectoryName(AppUpdates.StableLauncher) });
-				type.InvokeMember("Description", BindingFlags.SetProperty, null, obj, new object[1] { "Start " + text + " i APK Runner" });
+				type.InvokeMember("Description", BindingFlags.SetProperty, null, obj, new object[1] { "Start " + text + " in APK Runner" });
 				type.InvokeMember("Save", BindingFlags.InvokeMethod, null, obj, null);
-				Log("Skrivebordsgenvej oprettet: " + Path.GetFileName(text2));
+				Log("Desktop shortcut created: " + Path.GetFileName(text2));
 			}
 			catch (Exception ex)
 			{
-				Log("Kunne ikke oprette skrivebordsgenvej: " + ex.Message);
+				Log("Could not create desktop shortcut: " + ex.Message);
 			}
 		}
 
@@ -1555,7 +1571,7 @@ namespace APKRunner
 					registryKey5.SetValue("", "APKRunner.APK");
 				}
 				Runtime.SHChangeNotify(134217728u, 0u, IntPtr.Zero, IntPtr.Zero);
-				MessageBox.Show(this, "Dobbeltklik på en APK åbner nu APK Runner. Hvis Windows allerede har gemt en anden standardapp, vælg APK Runner én gang under Åbn med. Flyt ikke programmappen bagefter.", Text);
+				MessageBox.Show(this, "Double-clicking an APK now opens APK Runner. If Windows has already saved another default app, choose APK Runner once under Open with. Do not move the program folder afterwards.", Text);
 			}
 			catch (Exception ex)
 			{
@@ -1568,6 +1584,7 @@ namespace APKRunner
 		[STAThread]
 		private static void Main(string[] args)
 		{
+			AppLanguage.Initialize();
 			Velopack.VelopackApp.Build().SetAutoApplyOnStartup(false).Run();
 			ServicePointManager.SecurityProtocol = SecurityProtocolType.Tls12;
             if (args.Length == 2 && args[0] == "--update-status") {
@@ -1596,7 +1613,7 @@ namespace APKRunner
 				Application.EnableVisualStyles();
 				Application.SetCompatibleTextRenderingDefault(false);
                 try { if (RuntimeSetup.EnsureConfigured()) Application.Run(new Window((args.Length > 0) ? args[0] : null)); }
-                catch (Exception error) { MessageBox.Show(error.Message, "APK Runner - data ikke tilgængelige", MessageBoxButtons.OK, MessageBoxIcon.Error); }
+                catch (Exception error) { MessageBox.Show(error.Message, "APK Runner - data unavailable", MessageBoxButtons.OK, MessageBoxIcon.Error); }
 			}
 		}
 	}

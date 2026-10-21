@@ -2,7 +2,7 @@
 
 APK Runner opens local Android APK and XAPK packages in Windows windows. It manages an Android Emulator runtime and uses scrcpy for the app window, mouse, keyboard and playback audio.
 
-The interface currently uses Danish labels. This guide includes the labels you will see and their English meanings.
+This guide describes the English interface in the 12.11.0 release. Earlier releases use different labels; read the release notes when updating from one of those versions.
 
 ## Before you start
 
@@ -21,13 +21,13 @@ An APK is executable software. Use packages from sources you trust. Compatibilit
 2. Download **APKRunner-win-Setup.exe** from the release assets.
 3. Run the installer and open **APK Runner**.
 
-The currently published release may differ from the source in the repository. Read its release notes for changes and distribution details. A package integrity hash does not establish a verified Windows publisher; check the release notes for signing status.
+The 12.11.0 release is not Authenticode-signed and may show a Windows publisher warning. Package integrity is checked by the updater, but those hashes do not establish a verified Windows publisher. Read each release's notes for its changes and signing status.
 
 ### First launch: new installation
 
 When asked whether you already have APK Runner with installed apps or saved data, select **No**. APK Runner creates a new runtime location outside the application files that its updater replaces.
 
-Choose **Normal** when the performance-profile dialog appears. You can try **Høj ydeevne** (High performance) later if your PC has enough resources.
+Choose **Normal** when the performance-profile dialog appears. You can try **High performance** later if your PC has enough resources.
 
 ### First launch: reuse an existing installation
 
@@ -44,24 +44,24 @@ Once a runtime has been registered, this question normally does not appear again
 ## 2. Install the Android runtime
 
 1. Let the initial component check finish.
-2. Select **Læs vilkår** (Read terms) and read the Android SDK terms.
-3. If you accept them, tick **Jeg accepterer Android SDK-vilkårene** (I accept the Android SDK terms).
-4. Select **Installér runtime** (Install runtime).
+2. Select **Read terms** and read the Android SDK terms.
+3. If you accept them, tick **I accept the Android SDK terms**.
+4. Select **Install runtime**.
 5. Wait while the activity log reports download and installation progress. The application downloads its private Java runtime, Android SDK tools, Android Emulator, system image and scrcpy as needed.
-6. Use **Kontrollér** (Check) to refresh component status. Components must show **KLAR** (Ready) before a new app can launch. **MANGLER** means a component or requirement is missing.
+6. Use **Check runtime** to refresh component status. Components must show **READY** before a new app can launch. **MISSING** means a component or requirement is missing.
 
 The main runtime uses **Android 15 / API 35, Google APIs, x86_64**. For an eligible legacy 32-bit x86 package, APK Runner installs a separate **Android 14 / API 34, Android TV, x86** runtime on demand. That additional download needs internet access and more disk space. The TV image is a compatibility path; it is separate from choosing landscape orientation.
 
 Android SDK and other downloaded components have their own licenses and terms. The repository's license for APK Runner does not replace those terms or grant rights to third-party Android apps.
 
-If installation stops, read the last messages under **AKTIVITETSLOG** (Activity log). Resolve the reported issue, then check or retry installation. Do not delete the runtime to fix a missing component if it contains apps or saved data you want to keep.
+If installation stops, read the last messages under **ACTIVITY LOG**. Resolve the reported issue, then check or retry installation. Do not delete the runtime to fix a missing component if it contains apps or saved data you want to keep.
 
 ## 3. Open your first app
 
-1. Under **APPVINDUE** (App window), choose:
-   - **Liggende / landscape** for a wide window.
-   - **Stående / portrait** for a tall window.
-2. Select **Åbn APK / XAPK** (Open APK / XAPK).
+1. Under **APP WINDOW**, choose:
+   - **Landscape** for a wide window.
+   - **Portrait** for a tall window.
+2. Select **Open APK / XAPK**.
 3. Select one `.apk` or `.xapk` file. You can also drop a single package onto the APK Runner window.
 4. Wait for Android to boot and for the package to install. The first boot, or a cold boot, can take several minutes.
 5. Use the app window with your mouse and keyboard. Audio playback is handled through scrcpy and depends on the Android app and runtime.
@@ -72,13 +72,13 @@ XAPK handling installs the contained APK files together and copies supported `An
 
 ### Open the app again
 
-After a successful launch, APK Runner attempts to create a Windows desktop shortcut named after the selected package file. You can also reopen the original package through **Åbn APK / XAPK**.
+After a successful launch, APK Runner attempts to create a Windows desktop shortcut named after the selected package file. You can also reopen the original package through **Open APK / XAPK**.
 
 **Keep the original APK/XAPK at the same path.** The desktop shortcut passes that file's path to APK Runner; moving or deleting the file breaks that shortcut even if the Android app is still installed. Reopen the file from its new location to create an updated shortcut.
 
 ### Enable double-click opening
 
-Select **Aktivér dobbeltklik** (Enable double-click) to register APK Runner for `.apk` and `.xapk` files for your Windows account. If Windows retains another default app, use **Open with** in File Explorer and select APK Runner.
+Select **Enable double-click** to register APK Runner for `.apk` and `.xapk` files for your Windows account. If Windows retains another default app, use **Open with** in File Explorer and select APK Runner.
 
 ## 4. Orientation and performance
 
@@ -91,19 +91,19 @@ At startup, choose a performance profile:
 | Profile | What it changes |
 | --- | --- |
 | **Normal** | Uses fewer Android CPU cores and less RAM than High performance on hosts with sufficient resources. Start here. |
-| **Høj ydeevne** | Assigns more Android CPU cores and RAM when the host has enough resources. It can leave less capacity for other Windows applications. |
+| **High performance** | Assigns more Android CPU cores and RAM when the host has enough resources. It can leave less capacity for other Windows applications. |
 
 To choose a different profile, restart APK Runner and select it in the startup dialog. Applying a different profile to a running virtual device can restart Android, so save work first.
 
-Some previously configured runtimes expose **Normal / 30 FPS** and **Høj ydeevne / op til 60 FPS**. These labels depend on an optional, machine-specific rendering setting; they are not the standard configuration for every fresh installation. Frame-rate limits are targets or caps, not a guarantee that a particular app will reach them.
+Some previously configured runtimes expose **Normal / 30 FPS** and **High / up to 60 FPS**. These labels depend on an optional, machine-specific rendering setting; they are not the standard configuration for every fresh installation. Frame-rate limits are targets or caps, not a guarantee that a particular app will reach them.
 
 ## 5. Close apps and stop Android
 
 Save your work inside the Android app before closing it. Closing the app's Windows window does **not** shut down the Android emulator; Android stays running in the background.
 
-**Stop Android** stops APK Runner's main phone virtual device. **Current limitation:** it does not stop the separate legacy x86/TV virtual device. Closing APK Runner itself also does not automatically stop either emulator.
+In 12.11.0, **Stop Android** gracefully stops both APK Runner's main phone device and its legacy x86/TV device. It checks the identity of every running target before stopping any of them and refuses to stop an unrelated emulator. Selecting it when both devices are already stopped is harmless. It does not uninstall Android apps or delete saved data. Closing APK Runner itself does not automatically stop either emulator.
 
-If the legacy runtime is still running, save its work and shut it down before applying an APK Runner update. Technical users can stop only the identified APK Runner TV device with its bundled ADB:
+Earlier 12.10.x releases stop only the phone device. If you still use one of those releases and the legacy runtime is running, save its work and shut it down before applying an APK Runner update. Technical users can stop only the identified APK Runner TV device with its bundled ADB:
 
 ```powershell
 # For an installed release with a registered runtime:
@@ -122,13 +122,13 @@ The name check is important: do not stop an unrelated emulator just because it o
 
 ## 6. Updates
 
-Installed releases check the repository's stable GitHub releases at startup, every six hours while open, and when you select **Søg efter opdateringer** (Check for updates).
+Installed releases check the repository's stable GitHub releases at startup, every six hours while open, and when you select **Check for updates**. In 12.11.0, the local component check runs alongside the network update check. New app launches wait until both checks finish and the update policy permits them.
 
 When a newer stable release is discovered:
 
 1. Save work in your Android apps.
-2. Close the app windows and stop the APK Runner Android runtimes. Remember the legacy-device limitation above.
-3. Select **Opdatér og genstart** (Update and restart).
+2. Close the app windows and select **Stop Android**. If you are still using an earlier 12.10.x release, also follow the legacy-device instructions above.
+3. Select **Update and restart**.
 4. Wait for the verified package to download, install and restart APK Runner.
 
 A discovered newer stable release is required before starting additional Android apps. Already-running Android sessions continue until you close them. A failed network check alone does not create an update requirement, but an already-discovered required version is cached and can continue to block launches while you are offline.
@@ -137,9 +137,9 @@ Updates replace the Windows application separately from the Android runtime. Tha
 
 ## 7. Storage, data and backups
 
-Select **Diskforbrug** (Disk usage) to view the runtime path, logical file sizes and Windows-reported occupied disk space. Compression and sparse virtual disks can make logical size differ from space used on disk.
+Select **Storage usage** to view the runtime path, logical file sizes and Windows-reported occupied disk space. Compression and sparse virtual disks can make logical size differ from space used on disk.
 
-The report lists possible cleanup candidates, but the report itself does **not** delete them. The checkbox **Spar snapshot-plads ved næste Android-start (kold opstart)** means “Save snapshot space at the next Android start (cold boot).” It changes how the next emulator process starts; it does not immediately reclaim all existing snapshot files or uninstall apps. Cold boot can take longer.
+The report lists possible cleanup candidates, but the report itself does **not** delete them. The checkbox **Save snapshot space on the next Android start (cold boot)** changes how the next emulator process starts; it does not immediately reclaim all existing snapshot files or uninstall apps. Cold boot can take longer.
 
 For a normal installed release:
 
@@ -155,9 +155,9 @@ Before sharing logs or screenshots for support, review them for local paths, fil
 
 | What you see | What to check |
 | --- | --- |
-| **Åbn APK / XAPK** is unavailable | Wait for the current operation to finish. Use **Kontrollér** and resolve every **MANGLER** entry. Also check whether a required update is blocking new launches. |
-| **Installér runtime** is unavailable | Read the SDK terms and select the acceptance checkbox if you agree. Controls are also temporarily disabled during other operations. |
-| Virtualization is missing | Finish installing the emulator so it can perform its acceleration check. Check firmware virtualization and Windows Hypervisor Platform, restart Windows when required, then use **Kontrollér**. |
+| **Open APK / XAPK** is unavailable | Wait for the current operation to finish. Use **Check runtime** and resolve every **MISSING** entry. Also check whether a required update is blocking new launches. |
+| **Install runtime** is unavailable | Read the SDK terms and select the acceptance checkbox if you agree. Controls are also temporarily disabled during other operations. |
+| Virtualization is missing | Finish installing the emulator so it can perform its acceleration check. Check firmware virtualization and Windows Hypervisor Platform, restart Windows when required, then use **Check runtime**. |
 | A download or runtime installation fails | Read the activity log, check internet access and available disk space, then retry. Installation depends on upstream download services and their available packages. |
 | The first launch is slow | Android may be cold-booting and performing background initialization. Wait for the activity log. Repeatedly launching the same package or force-closing the emulator can make diagnosis harder. |
 | Android fails to boot or the app window closes immediately | Read the activity log for emulator graphics, acceleration or scrcpy errors. Confirm that the component check passes and avoid running another APK Runner operation at the same time. |
@@ -168,7 +168,7 @@ Before sharing logs or screenshots for support, review them for local paths, fil
 | Portrait or landscape appears ignored | Select the orientation before opening the package. The app can enforce its own orientation. Legacy x86 apps share a display orientation. |
 | A desktop shortcut no longer works | Restore the original APK/XAPK path or open the package from its new location to recreate the shortcut. |
 | Double-click opens a different Windows program | Use File Explorer's **Open with** and select APK Runner after enabling its file registration. |
-| An update says Android is still running | Close app windows and stop the runtimes. **Stop Android** currently handles only the main phone device; check the legacy-device instructions above. Closing a window alone does not shut Android down. |
+| An update says Android is still running | Save work, close app windows and select **Stop Android**. In 12.11.0 it stops both managed devices; earlier 12.10.x releases need the separate legacy-device instructions above. Closing a window alone does not shut Android down. |
 | A required update blocks launches while offline | Reconnect and install the discovered required release. A cached update requirement remains active during a network outage. |
 | Previously installed apps appear missing | Check the actual runtime path. Different runtimes have separate app/data storage. Restore access to your registered original runtime rather than deleting it or starting over. |
 

@@ -1,4 +1,14 @@
-APK Runner 12.10.0 adds GitHub-based automatic updates and a smaller opening window.
+APK Runner 12.11.0 makes the application English-only and improves startup and Android controls.
+
+- Translates the interface, setup, status checks, activity messages, storage reports,
+  errors, performance profiles, shortcuts and update notifications into English.
+- Uses English application resource preferences on Windows configured for another language.
+- Checks local runtime readiness alongside the online update check, so local component
+  status is available without waiting for the network. Required updates still gate new launches.
+- Stops either supported APK Runner Android runtime, with ownership checks before shutdown.
+- Keeps the rounded icon, both orientation modes, installed apps and saved data.
+
+The automatic update and compact-window features introduced in 12.10.0 remain:
 
 - Checks for newer stable releases at startup, every six hours while open, and on request.
 - Shows an update notification and an Update and restart action. A known newer stable

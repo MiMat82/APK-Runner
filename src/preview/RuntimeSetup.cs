@@ -14,20 +14,20 @@ namespace APKRunner
             string existingDefault = Path.Combine(RuntimePaths.SettingsDirectory, "runtime");
             string root = existingDefault;
             if (!Directory.Exists(existingDefault)) {
-                var choice = MessageBox.Show("Har du allerede APK Runner med installerede apps eller gemte data?\n\nJa: vælg den eksisterende mappe, så dine apps og data genbruges.\nNej: opret en ny installation.\nAnnuller: afslut uden at ændre data.", "APK Runner - behold dine apps", MessageBoxButtons.YesNoCancel, MessageBoxIcon.Question);
+                var choice = MessageBox.Show("Do you already have APK Runner with installed apps or saved data?\n\nYes: select the existing folder to keep your apps and data.\nNo: create a new installation.\nCancel: exit without changing any data.", "APK Runner - keep your apps", MessageBoxButtons.YesNoCancel, MessageBoxIcon.Question);
                 if (choice == DialogResult.Cancel) return false;
                 if (choice == DialogResult.Yes) {
-                    using (var picker = new FolderBrowserDialog { Description = "Vælg den eksisterende APK Runner-mappe eller dens runtime-mappe", ShowNewFolderButton = false }) {
+                    using (var picker = new FolderBrowserDialog { Description = "Select your existing APK Runner folder or its runtime folder", ShowNewFolderButton = false }) {
                         if (picker.ShowDialog() != DialogResult.OK) return false;
                         root = picker.SelectedPath;
                         if (Directory.Exists(Path.Combine(root, "runtime", "avd"))) root = Path.Combine(root, "runtime");
                         if (!Directory.Exists(Path.Combine(root, "avd")))
-                            throw new InvalidOperationException("Den valgte mappe indeholder ikke dine eksisterende Android-enheder. Ingen data er flyttet eller slettet. Start igen og vælg den oprindelige runtime-mappe.");
+                            throw new InvalidOperationException("The selected folder does not contain your existing Android devices. No data has been moved or deleted. Restart and select the original runtime folder.");
                     }
                     // Validate the registered location before writing any configuration.
                     string managedRoot = Velopack.Locators.VelopackLocator.Current.RootAppDir.TrimEnd('\\');
                     if (root.Equals(managedRoot, StringComparison.OrdinalIgnoreCase) || root.StartsWith(managedRoot + "\\", StringComparison.OrdinalIgnoreCase))
-                        throw new InvalidOperationException("Vælg den oprindelige mappe uden for den nye APK Runner-installation.");
+                        throw new InvalidOperationException("Select the original folder outside the new APK Runner installation.");
                 } else Directory.CreateDirectory(root);
             }
             Directory.CreateDirectory(RuntimePaths.SettingsDirectory);

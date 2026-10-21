@@ -10,11 +10,11 @@ namespace APKRunner
 {
     internal partial class Window
     {
-        Label statusSummary = FlightTheme.Label("AFVENTER KONTROL", FlightTheme.Muted, FlightTheme.Mono(9));
+        Label statusSummary = FlightTheme.Label("AWAITING CHECK", FlightTheme.Muted, FlightTheme.Mono(9));
         Label activityLabel = FlightTheme.Label("STANDBY", FlightTheme.Cyan, FlightTheme.Mono(9));
-        Label emptyState = new Label { Text = "Kontrollér runtime for at se komponenternes status.",
+        Label emptyState = new Label { Text = "Check the runtime to see component status.",
             ForeColor = FlightTheme.Muted, BackColor = FlightTheme.Surface, Dock = DockStyle.Fill,
-            TextAlign = ContentAlignment.MiddleCenter, Font = FlightTheme.Body(11), AccessibleName = "Komponentstatus" };
+            TextAlign = ContentAlignment.MiddleCenter, Font = FlightTheme.Body(11), AccessibleName = "Component status" };
 
         void InitializeFlightDeck(bool preview)
         {
@@ -66,7 +66,7 @@ namespace APKRunner
             body.Controls.Add(new FlightHeader(), 0, 0);
 
             var statusHeader = new Panel { Dock = DockStyle.Fill, Margin = new Padding(0) };
-            var statusTitle = FlightTheme.Label("SYSTEMSTATUS", FlightTheme.Cyan, FlightTheme.Strong(9));
+            var statusTitle = FlightTheme.Label("SYSTEM STATUS", FlightTheme.Cyan, FlightTheme.Strong(9));
             statusTitle.Location = new Point(0, 7);
             statusHeader.Controls.Add(statusTitle);
             statusHeader.Controls.Add(statusSummary);
@@ -78,10 +78,10 @@ namespace APKRunner
             list.Dock = DockStyle.Fill;
             list.View = View.Details;
             list.FullRowSelect = true;
-            list.Columns.Add("Komponent", 190);
+            list.Columns.Add("Component", 190);
             list.Columns.Add("Status", 110);
-            list.Columns.Add("Detaljer", 450);
-            list.AccessibleName = "Runtime komponenter og status";
+            list.Columns.Add("Details", 450);
+            list.AccessibleName = "Runtime components and status";
             list.TabIndex = 0;
             FlightTheme.StyleList(list);
             listPanel.Controls.Add(list);
@@ -95,17 +95,17 @@ namespace APKRunner
             controls.RowStyles.Add(new RowStyle(SizeType.AutoSize));
             body.Controls.Add(controls, 0, 3);
             var display = new FlowLayoutPanel { Dock = DockStyle.Fill, AutoSize = true, MinimumSize = new Size(0, 38), Margin = new Padding(0), WrapContents = true };
-            var displayLabel = FlightTheme.Label("APPVINDUE", FlightTheme.Muted, FlightTheme.Strong(8));
+            var displayLabel = FlightTheme.Label("APP WINDOW", FlightTheme.Muted, FlightTheme.Strong(8));
             displayLabel.Margin = new Padding(0, 9, 15, 0);
             display.Controls.Add(displayLabel);
             orientation.Width = 211;
-            orientation.Items.AddRange(new object[] { "Liggende  /  landscape", "Stående  /  portrait" });
+            orientation.Items.AddRange(new object[] { "Landscape", "Portrait" });
             orientation.SelectedIndex = 0;
             orientation.SelectedIndexChanged += delegate { runtime.Portrait = orientation.SelectedIndex == 1; };
             orientation.Margin = new Padding(0, 0, 18, 0);
             orientation.TabIndex = 1;
             display.Controls.Add(orientation);
-            var dropHint = FlightTheme.Label("Slip en APK- eller XAPK-fil i vinduet", FlightTheme.Muted, FlightTheme.Body(9));
+            var dropHint = FlightTheme.Label("Drop an APK or XAPK file here", FlightTheme.Muted, FlightTheme.Body(9));
             dropHint.Margin = new Padding(0, 7, 0, 0);
             display.Controls.Add(dropHint);
             controls.Controls.Add(display, 0, 0);
@@ -115,11 +115,11 @@ namespace APKRunner
             install.Enabled = false;
             ((FlightButton)open).Primary = true;
             open.Width = 151; install.Width = 158; refresh.Width = 119; stop.Width = 129; storage.Width = 130;
-            Add(actions, open, "Åbn APK / XAPK", Choose);
-            Add(actions, install, "Installér runtime", delegate { if (consent.Checked) Work(delegate { runtime.Install(UpdateStatus); RunPending(); }); });
-            Add(actions, refresh, "Kontrollér", delegate { Work(delegate { UpdateStatus(runtime.Check()); RunPending(); }); });
+            Add(actions, open, "Open APK / XAPK", Choose);
+            Add(actions, install, "Install runtime", delegate { if (consent.Checked) Work(delegate { runtime.Install(UpdateStatus); RunPending(); }); });
+            Add(actions, refresh, "Check runtime", delegate { Work(delegate { UpdateStatus(runtime.Check()); RunPending(); }); });
             Add(actions, stop, "Stop Android", delegate { Work(delegate { runtime.Stop(); }); });
-            Add(actions, storage, "Diskforbrug", delegate { Work(delegate {
+            Add(actions, storage, "Storage usage", delegate { Work(delegate {
                 string report = StorageReport.Describe(StorageReport.Scan(runtime.Root));
                 Invoke((Action)delegate { StorageReport.Show(this, report, runtime.Root); });
             }); });
@@ -128,25 +128,25 @@ namespace APKRunner
             foreach (Control control in actions.Controls) { control.TabIndex = tab++; control.AccessibleName = control.Text; }
 
             var license = new FlowLayoutPanel { Dock = DockStyle.Fill, AutoSize = true, MinimumSize = new Size(0, 45), Margin = new Padding(0), WrapContents = true };
-            consent.Text = "Jeg accepterer Android SDK-vilkårene";
+            consent.Text = "I accept the Android SDK terms";
             consent.ForeColor = FlightTheme.Muted;
             consent.AutoSize = true;
             consent.Margin = new Padding(0, 13, 16, 0);
             consent.TabIndex = 7;
             consent.CheckedChanged += delegate { install.Enabled = !busy && consent.Checked; };
             license.Controls.Add(consent);
-            var terms = new LinkLabel { Text = "Læs vilkår", AutoSize = true, Font = FlightTheme.Body(9),
+            var terms = new LinkLabel { Text = "Read terms", AutoSize = true, Font = FlightTheme.Body(9),
                 LinkColor = FlightTheme.Cyan, ActiveLinkColor = FlightTheme.Amber, VisitedLinkColor = FlightTheme.Cyan,
                 Margin = new Padding(0, 14, 18, 0), TabIndex = 8 };
             terms.LinkClicked += delegate { System.Diagnostics.Process.Start("https://developer.android.com/studio#terms"); };
             license.Controls.Add(terms);
             associate.Width = 182;
-            Add(license, associate, "Aktivér dobbeltklik", Register);
+            Add(license, associate, "Enable double-click", Register);
             associate.TabIndex = 9;
             controls.Controls.Add(license, 0, 2);
 
             var logHeader = new Panel { Dock = DockStyle.Fill, Margin = new Padding(0) };
-            var logTitle = FlightTheme.Label("AKTIVITETSLOG", FlightTheme.Cyan, FlightTheme.Strong(9));
+            var logTitle = FlightTheme.Label("ACTIVITY LOG", FlightTheme.Cyan, FlightTheme.Strong(9));
             logTitle.Location = new Point(0, 6);
             logHeader.Controls.Add(logTitle);
             logHeader.Controls.Add(activityLabel);
@@ -156,7 +156,7 @@ namespace APKRunner
             log.Multiline = true; log.ReadOnly = true; log.ScrollBars = ScrollBars.Vertical;
             log.Dock = DockStyle.Fill; log.BorderStyle = BorderStyle.None;
             log.BackColor = FlightTheme.Surface; log.ForeColor = FlightTheme.Muted; log.Font = FlightTheme.Mono(9);
-            log.Margin = new Padding(0); log.TabIndex = 10; log.AccessibleName = "Aktivitetslog";
+            log.Margin = new Padding(0); log.TabIndex = 10; log.AccessibleName = "Activity log";
             var logWell = new Panel { Dock = DockStyle.Fill, Margin = new Padding(0), Padding = new Padding(12, 10, 10, 10), BackColor = FlightTheme.Surface };
             logWell.Controls.Add(log);
             body.Controls.Add(logWell, 0, 5);
@@ -164,7 +164,7 @@ namespace APKRunner
             footer.ColumnStyles.Add(new ColumnStyle(SizeType.Absolute, 190));
             footer.ColumnStyles.Add(new ColumnStyle(SizeType.Percent, 100));
             footer.ColumnStyles.Add(new ColumnStyle(SizeType.AutoSize));
-            footer.Controls.Add(FlightTheme.Label("LOKAL / WINDOWS x64", FlightTheme.Muted, FlightTheme.Mono(8)), 0, 0);
+            footer.Controls.Add(FlightTheme.Label("LOCAL / WINDOWS x64", FlightTheme.Muted, FlightTheme.Mono(8)), 0, 0);
             footer.Controls.Add(updateStatus, 1, 0);
             footer.Controls.Add(updateLink, 2, 0);
             body.Controls.Add(footer, 0, 6);
@@ -172,12 +172,18 @@ namespace APKRunner
             HandleCreated += delegate { FlightTheme.DarkTitle(this); };
             if (!preview) Shown += async delegate {
                 try { ShellBranding.RepairShortcuts(AppUpdates.StableLauncher, RuntimePaths.SettingsDirectory); }
-                catch (Exception error) { Log("Genvejsikon kunne ikke opdateres: " + error.Message); }
-                await CheckForUpdates(false);
-                if (IsDisposed) return;
-                updateTimer.Start();
+                catch (Exception error) { Log("Could not update the shortcut icon: " + error.Message); }
                 AskPerformanceMode();
-                Work(delegate { runtime.RepairAvdPointers(); UpdateStatus(runtime.Check()); RunPending(); });
+                // Local readiness does not depend on GitHub being reachable. Keep one
+                // busy scope until both checks finish so a queued APK cannot race them.
+                await RunFlightOperationAsync(async delegate {
+                    Task updateCheck = CheckForUpdates(false);
+                    await Task.WhenAll(Task.Run(delegate { runtime.RepairAvdPointers(); UpdateStatus(runtime.Check()); }), updateCheck);
+                    if (!IsDisposed) await Task.Run((Action)RunPending);
+                });
+                if (IsDisposed) return;
+                NotifyRequiredUpdate(false);
+                updateTimer.Start();
             };
             AllowDrop = true;
             DragEnter += delegate(object sender, DragEventArgs e) {
@@ -190,7 +196,7 @@ namespace APKRunner
                 }
             };
             FormClosing += delegate(object sender, FormClosingEventArgs e) {
-                if (busy || applyingUpdate) { e.Cancel = true; MessageBox.Show(this, "Vent til den igangværende handling er færdig.", Text); }
+                if (busy || applyingUpdate) { e.Cancel = true; MessageBox.Show(this, "Wait for the current operation to finish.", Text); }
             };
         }
 
@@ -207,17 +213,22 @@ namespace APKRunner
 
         async void RunFlightOperation(Action action)
         {
+            await RunFlightOperationAsync(() => Task.Run(action));
+        }
+
+        async Task RunFlightOperationAsync(Func<Task> action)
+        {
             if (busy || applyingUpdate) return;
             busy = true;
             foreach (Control control in new Control[] { install, open, refresh, associate, stop, storage, orientation }) control.Enabled = false;
-            activityLabel.Text = "ARBEJDER";
+            activityLabel.Text = "WORKING";
             activityLabel.ForeColor = FlightTheme.Amber;
-            if (lastStatus == null) emptyState.Text = "Kontrollerer runtime-komponenter …";
+            if (lastStatus == null) emptyState.Text = "Checking runtime components …";
             bool failed = false;
-            try { await Task.Run(action); }
+            try { await action(); }
             catch (Exception ex) {
                 failed = true; Log(ex.Message);
-                if (lastStatus == null) emptyState.Text = "Kontrollen kunne ikke afsluttes. Se aktivitetsloggen og prøv igen.";
+                if (lastStatus == null) emptyState.Text = "The check could not finish. See the activity log and try again.";
                 MessageBox.Show(this, ex.Message, "APK Runner", MessageBoxButtons.OK, MessageBoxIcon.Information);
             }
             finally {
@@ -225,7 +236,7 @@ namespace APKRunner
                 install.Enabled = consent.Checked;
                 refresh.Enabled = associate.Enabled = stop.Enabled = storage.Enabled = orientation.Enabled = true;
                 open.Enabled = !updatePolicy.BlocksNewApps && open.Tag is bool && (bool)open.Tag;
-                activityLabel.Text = failed ? "KRÆVER HANDLING" : "STANDBY";
+                activityLabel.Text = failed ? "ACTION REQUIRED" : "STANDBY";
                 activityLabel.ForeColor = failed ? FlightTheme.Amber : FlightTheme.Cyan;
             }
         }

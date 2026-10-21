@@ -3,7 +3,7 @@
     <TargetFramework>net48</TargetFramework>
     <OutputType>WinExe</OutputType>
     <PlatformTarget>x64</PlatformTarget>
-    <Version>12.10.0</Version>
+    <Version>12.11.0</Version>
     <AssemblyName>APKRunner</AssemblyName>
     <StartupObject>APKRunner.Program</StartupObject>
     <EnableDefaultCompileItems>false</EnableDefaultCompileItems>

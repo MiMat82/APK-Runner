@@ -34,7 +34,7 @@ try {
 } finally { $archive.Dispose() }
 if (!$AllowUnsignedDevelopment) {
     & (Join-Path $PSScriptRoot 'Verify-SignedRelease.ps1') -ReleaseDirectory $OutputDirectory -Version $Version -ConfigurationPath $SigningConfiguration
-} else { Write-Warning 'Unsigned development package only. Publish-Release.ps1 will reject it.' }
+} else { Write-Warning 'Unsigned package. Publication requires an explicit unsigned-release authorization and disclosure.' }
 Get-ChildItem -LiteralPath $OutputDirectory -File | ForEach-Object { '{0}  {1}' -f (Get-FileHash -LiteralPath $_.FullName -Algorithm SHA256).Hash.ToLowerInvariant(), $_.Name } | Set-Content -LiteralPath (Join-Path $OutputDirectory 'SHA256SUMS.txt') -Encoding ASCII
 $OutputDirectory | Set-Content -LiteralPath (Join-Path $project 'analysis\updater-release-path.txt') -Encoding UTF8
 Write-Output ('Release ready: ' + $OutputDirectory)

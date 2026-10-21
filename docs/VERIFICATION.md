@@ -1,8 +1,8 @@
-# Open-source publication verification
+# Verification history
 
 Checked on **2026-10-21** on a Windows x64 development PC using **.NET SDK 10.0.402** and Windows PowerShell 5.1.
 
-## Results
+## Original open-source publication checks
 
 | Check | Result |
 | --- | --- |
@@ -29,12 +29,38 @@ README banner SHA-256: `3a41123dc0d9ee71e39928315e802de7f9f709d9943f02073db910c6
 - Added project/dependency notices to the build output.
 - Fixed fixture junction cleanup for Windows PowerShell 5.1 using a checked fixture path and nonrecursive junction deletion.
 
+## 12.11.0 English release preparation
+
+Checked on **2026-10-21** after the original source publication:
+
+| Check | Result |
+| --- | --- |
+| Runtime/storage/English UI/startup and guarded cleanup | 81 passed. Includes English managed/background/native thread language preferences and delayed-network startup control states. |
+| Update policy/path/window checks | 25 passed. |
+| Safe Stop Android checks | 29 passed using isolated fake ADB child processes; both managed devices, unrelated identities, operation locking and data/configuration preservation covered. |
+| Installed local launcher | 12.11.0; 10 runtime components ready, with English status output. |
+| Existing Android data/configuration | All 11 protected file hashes matched the pre-update baseline. No runtime reset or data migration. |
+| Release packaging safeguards | Restored Release debug-symbol suppression and inclusion of APK Runner's MIT license plus third-party notices. Final distribution packages are built from fresh staging output. |
+| Independent release payload audit | In progress during release preparation; this section does not claim a completed public upload check. |
+| Live GitHub update probe | In progress during release preparation; public-feed verification is separate from the completed local checks. |
+
+The completed application checks above total **135**. The fresh distribution build and
+independent payload/public-download checks are additional checks, not included in that
+number. The release is deliberately **unsigned**, following the owner's decision to
+avoid a paid signing service; no verified Windows publisher is claimed. Publication
+still requires explicit unsigned authorization, a source-commit target, payload audits,
+draft-asset download and matching hashes before latest-release exposure.
+
+The live-network probe's expected version is parameterized. It validates update
+download and application in isolation without using the owner's Android runtime;
+GUI restart and real Android app behavior are not claimed by that probe.
+
 ## Limits
 
 The source checkout was built without copying an Android runtime or private historical analysis into it. NuGet/tool caches on the development PC were available; this is not proof of an uncached clean-machine install.
 
 No real Android app, emulator workload, firmware virtualization configuration, physical device, or independent PC was tested during the publication task. Android app compatibility and performance must be validated separately. No real Android data was reset or cleaned by these checks.
 
-No new binary release is published as part of this source publication. Existing 12.10.0 release assets remain the earlier, unsigned downloads. The current source contains maintained changes and is not asserted to reproduce those assets byte for byte.
+The original source-publication task did not publish a binary release. Historical 12.10.0 assets remain earlier unsigned downloads and are not asserted to be byte-for-byte reproducible from the maintained source. The later 12.11.0 release preparation is recorded separately above.
 
 GitHub Actions is not configured as part of this publication. The source includes the local build and check commands; the results above are local validation, not hosted CI results.

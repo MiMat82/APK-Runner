@@ -104,10 +104,10 @@ namespace APKRunner
                 FormBorderStyle = FormBorderStyle.FixedDialog, MaximizeBox = false, MinimizeBox = false, ShowInTaskbar = false })
             {
                 Branding.Apply(form);
-                var title = Label("VÆLG YDEEVNEPROFIL", Cyan, Strong(18)); title.Location = new Point(28, 28);
-                var explanation = Label(smoothingAvailable ? "Telefon: Normal har 30 FPS-grænse og en lille videobuffer.\nHøj: op til 60 FPS, flere CPU-kerner og mere Android-RAM.\nFuld opløsning. Første kolde opstart kan tage tid.\nÆldre 32-bit/x86-apps bruger den hidtidige videotilstand." : "Normal passer til de fleste apps. Høj ydeevne giver Android\nflere CPU-kerner og mere RAM, når computeren har plads.", Muted, Body(11)); explanation.Location = new Point(30, 82);
+                var title = Label("CHOOSE PERFORMANCE PROFILE", Cyan, Strong(18)); title.Location = new Point(28, 28);
+                var explanation = Label(smoothingAvailable ? "Phone: Normal caps at 30 FPS with a small video buffer.\nHigh: up to 60 FPS, more CPU cores and Android RAM.\nFull resolution. The first cold boot may take a while.\nOlder 32-bit/x86 apps keep their existing video mode." : "Normal suits most apps. High performance gives Android\nmore CPU cores and RAM when your PC has capacity.", Muted, Body(11)); explanation.Location = new Point(30, 82);
                 var normal = new FlightButton { Text = smoothingAvailable ? "Normal / 30 FPS" : "Normal", Primary = true, Bounds = new Rectangle(30, 174, 245, 48), DialogResult = DialogResult.No };
-                var high = new FlightButton { Text = smoothingAvailable ? "Høj ydeevne / op til 60 FPS" : "Høj ydeevne", Bounds = new Rectangle(290, 174, 270, 48), DialogResult = DialogResult.Yes };
+                var high = new FlightButton { Text = smoothingAvailable ? "High / up to 60 FPS" : "High performance", Bounds = new Rectangle(290, 174, 270, 48), DialogResult = DialogResult.Yes };
                 form.Controls.AddRange(new Control[] { title, explanation, normal, high });
                 form.AcceptButton = normal; form.CancelButton = normal;
                 form.Shown += delegate { DarkTitle(form); };
@@ -169,7 +169,7 @@ namespace APKRunner
             ForeColor = FlightTheme.Text;
             Font = FlightTheme.Body(10);
             ItemHeight = 25;
-            AccessibleName = "Appvinduets startorientering";
+            AccessibleName = "App window starting orientation";
         }
         protected override void OnDrawItem(DrawItemEventArgs e)
         {

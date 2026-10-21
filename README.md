@@ -6,7 +6,7 @@
 
 **Run compatible Android APK and XAPK apps on a Windows PC, with a desktop launcher that handles Android setup, installation, and app windows.**
 
-APK Runner combines the Android Emulator, ADB, and scrcpy behind a Windows interface. Choose an app package, let Android start, and use the app with your mouse and keyboard. The interface currently uses Danish labels; the guides include English explanations.
+APK Runner combines the Android Emulator, ADB, and scrcpy behind a Windows interface. Choose an app package, let Android start, and use the app with your mouse and keyboard. The 12.11.0 release uses English throughout the launcher, including setup, component status, activity messages and update notifications.
 
 **[Download for Windows](https://github.com/MiMat82/APK-Runner/releases/latest)** · **[User guide](docs/USER-GUIDE.md)** · **[Build from source](docs/BUILDING.md)** · **[Report a problem](https://github.com/MiMat82/APK-Runner/issues)**
 
@@ -16,7 +16,7 @@ This repository contains the maintained application source, build and packaging 
 
 ![APK Runner Windows launcher showing runtime component status, orientation selection, APK/XAPK controls, and activity log](docs/images/apk-runner-screenshot.jpg)
 
-*Actual screenshot of APK Runner 12.10.1 on Windows. The current interface uses Danish labels. This shows the launcher with its runtime configured; the downloadable 12.10.0 release may look slightly different.*
+*Historical screenshot of APK Runner 12.10.1 on Windows, showing its earlier Danish interface with the runtime configured. The 12.11.0 release uses English labels; this image has not yet been replaced with a screenshot of that version.*
 
 ## What it can do
 
@@ -46,11 +46,13 @@ APK Runner targets Intel/AMD Windows x64 PCs. Windows on ARM is not a supported 
 
 ## Quick tutorial: run your first app
 
+These button names describe the English interface in the 12.11.0 release. Earlier releases use different labels.
+
 1. **Install the launcher.** Open [Releases](https://github.com/MiMat82/APK-Runner/releases/latest), expand **Assets** if needed, download **`APKRunner-win-Setup.exe`**, and install it. GitHub's **Source code** archives are for building, not installing the Windows app.
 2. **Choose new or existing data.** At first launch, choose **No** for a new Android installation. If you already use APK Runner, choose **Yes** and select your original APK Runner folder or its `runtime` folder to reuse your apps and data.
-3. **Set up Android.** Start with **Normal**. Open **Læs vilkår** (read terms), select **Jeg accepterer Android SDK-vilkårene** (I accept the Android SDK terms), then click **Installér runtime**. Wait for required components to show **KLAR** (ready). Use **Kontrollér** to check again.
-4. **Pick the display mode.** Choose **Stående / portrait** for a tall window or **Liggende / landscape** for a wide one.
-5. **Open your package.** Click **Åbn APK / XAPK**, choose a compatible `.apk` or `.xapk`, and wait for installation and the app window. You can also drag one package into the launcher. The first Android boot can take several minutes.
+3. **Set up Android.** Start with **Normal**. Open **Read terms**, select **I accept the Android SDK terms**, then click **Install runtime**. Wait for required components to show **READY**. Use **Check runtime** to check again.
+4. **Pick the display mode.** Choose **Portrait** for a tall window or **Landscape** for a wide one.
+5. **Open your package.** Click **Open APK / XAPK**, choose a compatible `.apk` or `.xapk`, and wait for installation and the app window. You can also drag one package into the launcher. The first Android boot can take several minutes.
 6. **Use and reopen the app.** Use your mouse and keyboard. Keep the original package in a stable folder: the generated desktop shortcut references that file.
 
 For detailed setup steps, button meanings, data locations, and troubleshooting, read the [full user guide](docs/USER-GUIDE.md).
@@ -69,13 +71,13 @@ Apps requiring a physical device, particular Google services, device integrity c
 
 ## Updates and saved data
 
-Setup-installed versions check at startup, every six hours while open, and through **Søg efter opdateringer** (check for updates). Once a newer stable version is detected, new app launches are blocked until it is installed. Already running Android sessions continue.
+Setup-installed versions check at startup, every six hours while open, and through **Check for updates**. Once a newer stable version is detected, new app launches are blocked until it is installed. Already running Android sessions continue. In 12.11.0, local component checks run alongside the network update check, so component status can appear without waiting for GitHub.
 
-Save your work and close Android sessions before choosing **Opdatér og genstart** (update and restart). **Stop Android** currently targets the primary phone runtime; legacy TV sessions may need to be closed separately. The updater checks for active Android processes before applying an update.
+Save your work and close Android sessions before choosing **Update and restart**. In 12.11.0, **Stop Android** gracefully stops both APK Runner's phone and legacy TV devices after checking their identities; it refuses to stop unrelated emulators. Earlier 12.10.x versions stop only the phone runtime. The updater checks for active Android processes before applying an update.
 
 An ordinary launcher update does not bundle or replace Android data disks. Back up important data, and keep any existing runtime folder you registered during setup. See the [user guide](docs/USER-GUIDE.md) for details.
 
-The currently published **12.10.0 installer is not Authenticode-signed** and may show a Windows publisher warning. Package integrity checks are implemented. Building the source does not create a trusted publisher signature.
+The **12.11.0 installer is not Authenticode-signed** and may show a Windows publisher warning. This unsigned release is an explicit maintainer decision; package integrity checks remain enabled. Building the source does not create a trusted publisher signature.
 
 ## Build and contribute
 
@@ -89,7 +91,7 @@ powershell.exe -NoProfile -File .\Build-App.ps1
 
 The output is `artifacts\updater-app\APKRunner.exe`, with dependency DLLs beside it. Read [BUILDING.md](docs/BUILDING.md) for prerequisites, tests, packaging, signing, and fork configuration; [ARCHITECTURE.md](docs/ARCHITECTURE.md) for a source map; and [CONTRIBUTING.md](CONTRIBUTING.md) to contribute.
 
-The source includes the maintained UI and rounded branding. The existing 12.10.0 assets predate the open-source publication; publishing source does not replace those binaries or claim a byte-for-byte match.
+The 12.11.0 release source includes the English interface, concurrent startup checks and rounded branding. Release tags identify the source commit used for each new official package. Historical 12.10.0 assets predate the open-source publication and are not claimed to be byte-for-byte reproducible from this source.
 
 ## Repository contents
 

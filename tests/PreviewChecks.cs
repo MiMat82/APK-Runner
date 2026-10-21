@@ -6,6 +6,8 @@ using System.Reflection;
 using System.Text;
 using System.Collections.Generic;
 using System.Windows.Forms;
+using System.Globalization;
+using System.Threading.Tasks;
 
 namespace APKRunner
 {
@@ -51,6 +53,16 @@ namespace APKRunner
             }
             Application.DoEvents();
         }
+        static void PumpUntil(Func<bool> condition)
+        {
+            var clock = System.Diagnostics.Stopwatch.StartNew();
+            while (!condition() && clock.Elapsed.TotalSeconds < 5) {
+                Application.DoEvents(); System.Threading.Thread.Sleep(5);
+            }
+            Application.DoEvents();
+        }
+        [System.Runtime.InteropServices.DllImport("kernel32.dll", CharSet = System.Runtime.InteropServices.CharSet.Unicode)]
+        static extern bool GetThreadPreferredUILanguages(uint flags, out uint count, StringBuilder languages, ref uint size);
         static void Render(Window window, string destination, Size size, List<Status> statuses, string log, string activity)
         {
             window.Size = size;
@@ -76,6 +88,15 @@ namespace APKRunner
             }
             try
             {
+                System.Threading.Thread.CurrentThread.CurrentCulture = CultureInfo.GetCultureInfo("da-DK");
+                System.Threading.Thread.CurrentThread.CurrentUICulture = CultureInfo.GetCultureInfo("da-DK");
+                AppLanguage.Initialize();
+                Check(CultureInfo.CurrentCulture.Name == "en-US" && CultureInfo.CurrentUICulture.Name == "en-US", "App uses English even when launched with Danish culture");
+                Check(Task.Run(() => CultureInfo.CurrentUICulture.Name).Result == "en-US", "Background operations inherit the English UI language");
+                uint languageCount, languageSize = 0;
+                GetThreadPreferredUILanguages(0x8, out languageCount, null, ref languageSize);
+                var nativeLanguages = new StringBuilder((int)languageSize);
+                Check(GetThreadPreferredUILanguages(0x8, out languageCount, nativeLanguages, ref languageSize) && nativeLanguages.ToString().StartsWith("en-US"), "Native dialog resource preference is English for the app thread");
                 string fixture = Path.GetFullPath(args[0]);
                 Directory.CreateDirectory(fixture);
                 string root = Path.Combine(fixture, "runtime");
@@ -146,7 +167,7 @@ namespace APKRunner
                 var startupLog = new List<string>(); runtime.Log = line => { lock (startupLog) startupLog.Add(line); };
                 bool startupFailed = false;
                 try { typeof(Runtime).GetMethod("StartAndroid", BindingFlags.Instance | BindingFlags.NonPublic).Invoke(runtime, new object[] { false }); }
-                catch (TargetInvocationException ex) { startupFailed = ex.InnerException.Message.Contains("afsluttede under opstart"); }
+                catch (TargetInvocationException ex) { startupFailed = ex.InnerException.Message.Contains("exited during startup"); }
                 string[] calls = File.ReadAllLines(Path.Combine(emulatorDir, "calls.txt"));
                 Check(startupFailed && calls.Length == 1 && calls[0].EndsWith("-gpu auto"), "Actual early emulator failure is reported without duplicate VM starts");
                 Check(File.ReadAllText(data) == userdata, "Startup failure preserves saved data");
@@ -212,24 +233,27 @@ namespace APKRunner
                     Check(Descendants(window).OfType<Button>().All(x => x.TabStop && !string.IsNullOrWhiteSpace(x.AccessibleName)), "Buttons have keyboard tab stops and accessible names");
                     var statuses = new List<Status> {
                         new Status("Windows x64", true, "Windows 10 22H2 / Windows 11 x64"),
-                        new Status("Virtualisering", true, "Windows Hypervisor Platform / WHPX"),
-                        new Status("Privat Java 17", true, "runtime\\java"),
-                        new Status("SDK værktøjer", true, "Privat Android SDK"),
+                        new Status("Virtualization", true, "Windows Hypervisor Platform / WHPX"),
+                        new Status("Private Java 17", true, "runtime\\java"),
+                        new Status("SDK tools", true, "Private Android SDK"),
                         new Status("ADB", true, "Android platform-tools"),
-                        new Status("Android Emulator", true, "Privat emulator"),
+                        new Status("Android Emulator", true, "Private emulator"),
                         new Status("AAPT", true, "Build-tools 35.0.0"),
-                        new Status("Android system", true, "Android 15 Google APIs / x86_64 / ARM-oversættelse"),
-                        new Status("Android enhed", false, "Flyttet runtime: registreringen skal opdateres ved første opstart"),
-                        new Status("App-vindue", true, "scrcpy")
+                        new Status("Android system", true, "Android 15 Google APIs / x86_64 / ARM translation"),
+                        new Status("Android device", false, "Moved runtime: registration will be updated on first startup"),
+                        new Status("App window", true, "scrcpy")
                     };
                     Directory.CreateDirectory(Path.Combine(fixture, "ui"));
                     Render(window, Path.Combine(fixture, "ui", "partial-1040x860.png"), new Size(1040, 860), statuses,
-                        "VISUEL FORHÅNDSVISNING / Eksempeldata\r\n9 af 10 komponenter klar. Kontrollér Android-enhedens registrering.\r\nDer er ikke startet en Android-emulator i denne UI-test.", "KRÆVER HANDLING");
-                    Check(Field<Label>(window, "statusSummary").Text == "09 / 10 KLAR", "Partial readiness count is accurate");
+                        "VISUAL PREVIEW / Sample data\r\n9 of 10 components ready. Check the Android device registration.\r\nNo Android emulator was started in this UI test.", "ACTION REQUIRED");
+                    Check(Field<Label>(window, "statusSummary").Text == "09 / 10 READY", "Partial readiness count is accurate");
+                    Check(Field<Button>(window, "refresh").Text == "Check runtime" && Field<Button>(window, "storage").Text == "Storage usage", "Primary maintenance controls use English labels");
+                    Check(orientation.Items.Cast<string>().SequenceEqual(new[] { "Landscape", "Portrait" }), "Both orientation choices use English only");
+                    Check(!Descendants(window).Any(c => c.Text.IndexOfAny(new[] {'æ', 'ø', 'å', 'Æ', 'Ø', 'Å'}) >= 0), "Rendered interface contains no Danish letters");
                     Render(window, Path.Combine(fixture, "ui", "empty-940x760.png"), new Size(940, 760), new List<Status>(), "", "STANDBY");
                     Check(Field<Label>(window, "emptyState").Visible, "Empty state explains next action");
-                    Field<Label>(window, "emptyState").Text = "Kontrollerer runtime-komponenter …";
-                    Field<Label>(window, "activityLabel").Text = "ARBEJDER";
+                    Field<Label>(window, "emptyState").Text = "Checking runtime components …";
+                    Field<Label>(window, "activityLabel").Text = "WORKING";
                     Field<Button>(window, "refresh").Enabled = false;
                     using (var image = new Bitmap(window.Width, window.Height)) {
                         window.DrawToBitmap(image, new Rectangle(0, 0, image.Width, image.Height));
@@ -237,7 +261,7 @@ namespace APKRunner
                     }
                     Field<Button>(window, "refresh").Enabled = true;
                     Render(window, Path.Combine(fixture, "ui", "error-1040x860.png"), new Size(1040, 860), statuses,
-                        "VISUEL FORHÅNDSVISNING / Simuleret fejl\r\nAndroid blev ikke klar inden for fire minutter.\r\nKontrollér virtualisering og prøv igen via Kontrollér.", "KRÆVER HANDLING");
+                        "VISUAL PREVIEW / Simulated error\r\nAndroid was not ready within four minutes.\r\nCheck virtualization and try Check runtime again.", "ACTION REQUIRED");
                     foreach (Status status in statuses) status.Ready = true;
                     // Exercise the real asynchronous control state transition using
                     // a harmless worker, with no APK, network or emulator calls.
@@ -245,16 +269,33 @@ namespace APKRunner
                     WaitForIdle(window);
                     Check(!Field<bool>(window, "busy"), "Async operation returns to idle");
                     Render(window, Path.Combine(fixture, "ui", "success-1280x900.png"), new Size(1280, 900), statuses,
-                        "VISUEL FORHÅNDSVISNING / Eksempeldata\r\nAlle komponenter klar. Vælg eller slip en APK/XAPK-fil.", "STANDBY");
+                        "VISUAL PREVIEW / Sample data\r\nAll components ready. Choose or drop an APK/XAPK file.", "STANDBY");
                     // The real Work completion consumes the readiness Tag set above.
                     typeof(Window).GetMethod("Work", BindingFlags.Instance | BindingFlags.NonPublic).Invoke(window, new object[] { (Action)delegate {} });
                     WaitForIdle(window);
                     Check(Field<Button>(window, "open").Enabled, "Successful readiness enables primary launch action");
+                    // Hold the online portion unresolved while a local readiness task
+                    // completes. The actual operation runner must keep a single busy
+                    // scope across asynchronous waits and restore controls afterward.
+                    var online = new TaskCompletionSource<bool>();
+                    var local = new TaskCompletionSource<bool>();
+                    bool launchReached = false;
+                    Func<Task> startup = async delegate {
+                        await Task.WhenAll(Task.Run(delegate { local.SetResult(true); }), online.Task);
+                        launchReached = true;
+                    };
+                    Task startupOperation = (Task)typeof(Window).GetMethod("RunFlightOperationAsync", BindingFlags.Instance | BindingFlags.NonPublic).Invoke(window, new object[] { startup });
+                    PumpUntil(() => local.Task.IsCompleted);
+                    Check(local.Task.IsCompleted && !startupOperation.IsCompleted, "Local readiness progresses while the network check is pending");
+                    Check(Field<bool>(window, "busy") && !launchReached && !Field<Button>(window, "open").Enabled, "A single busy scope protects app launches during both startup checks");
+                    online.SetResult(true);
+                    PumpUntil(() => startupOperation.IsCompleted);
+                    Check(startupOperation.Status == TaskStatus.RanToCompletion && launchReached && !Field<bool>(window, "busy"), "Startup operation completes only after both checks finish");
                     Render(window, Path.Combine(fixture, "ui", "success-1280x900.png"), new Size(1280, 900), statuses,
-                        "VISUEL FORHÅNDSVISNING / Eksempeldata\r\nAlle komponenter klar. Vælg eller slip en APK/XAPK-fil.", "STANDBY");
+                        "VISUAL PREVIEW / Sample data\r\nAll components ready. Choose or drop an APK/XAPK file.", "STANDBY");
                     Field<CheckBox>(window, "consent").Checked = false;
                     Render(window, Path.Combine(fixture, "ui", "permission-940x760.png"), new Size(940, 760), statuses,
-                        "VISUEL FORHÅNDSVISNING / SDK-vilkår\r\nInstallation kræver accept af Android SDK-vilkårene. Læs vilkårene før accept.", "STANDBY");
+                        "VISUAL PREVIEW / SDK terms\r\nInstallation requires accepting the Android SDK terms. Read the terms before accepting.", "STANDBY");
                     var viewport = Descendants(window).OfType<Panel>().First(p => p.Name == "ContentViewport" || p.AutoScroll);
                     Check(!viewport.HorizontalScroll.Visible && !viewport.VerticalScroll.Visible, "A normally sized window has no unnecessary outer scrollbars");
                     var required = new UpdatePolicy { Current = new Version(12, 10, 0), Required = new Version(12, 10, 1) };
@@ -267,15 +308,15 @@ namespace APKRunner
                     Check(Field<string>(window, "pending") == "missing-must-not-launch.apk", "Startup update check also gates command-line APK launches");
                     required.Checking = false;
                     typeof(Window).GetField("pending", BindingFlags.NonPublic | BindingFlags.Instance).SetValue(window, null);
-                    Render(window, Path.Combine(fixture, "ui", "compact-920x750.png"), new Size(920, 750), statuses, "Kompakt startvindue", "STANDBY");
+                    Render(window, Path.Combine(fixture, "ui", "compact-920x750.png"), new Size(920, 750), statuses, "Compact startup window", "STANDBY");
                     Check(!viewport.HorizontalScroll.Visible && !viewport.VerticalScroll.Visible, "Compact startup keeps controls visible without outer scrollbars");
-                    Render(window, Path.Combine(fixture, "ui", "small-640x520.png"), new Size(640, 520), statuses, "Lille skærm - indhold kan rulles", "STANDBY");
+                    Render(window, Path.Combine(fixture, "ui", "small-640x520.png"), new Size(640, 520), statuses, "Small screen - scroll to see all controls", "STANDBY");
                     Check(viewport.AutoScroll && viewport.HorizontalScroll.Visible && viewport.VerticalScroll.Visible, "Small screens retain access to the complete interface by scrolling");
-                    Render(window, Path.Combine(fixture, "ui", "focus-940x760.png"), new Size(940, 760), statuses, "Kontrol af kompakt layout", "STANDBY");
+                    Render(window, Path.Combine(fixture, "ui", "focus-940x760.png"), new Size(940, 760), statuses, "Compact layout check", "STANDBY");
                     Button storage = Field<Button>(window, "storage");
                     Rectangle visible = storage.RectangleToScreen(storage.ClientRectangle);
                     for (Control parent = storage.Parent; parent != null; parent = parent.Parent)
-                        Check(parent.RectangleToScreen(parent.ClientRectangle).Contains(visible), "Diskforbrug stays inside its container at minimum window size");
+                        Check(parent.RectangleToScreen(parent.ClientRectangle).Contains(visible), "Storage usage stays inside its container at minimum window size");
                     Check(window.SelectNextControl(null, true, true, true, false), "Native keyboard navigation can select a focusable control");
                     storage.Select();
                     using (var image = new Bitmap(window.Width, window.Height)) {
